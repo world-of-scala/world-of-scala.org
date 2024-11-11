@@ -1,0 +1,17 @@
+target/
+node_modules/
+dist/
+*.bak
+.bloop/
+.bsp/
+.metals/
+# Ignore this file
+# Doing so will all to publish the project
+# Locally: sbt publishLocal or sbt Docker/publishLocal
+# The CI will use the tag to publish the image
+version.sbt
+# Ignore the argocd folder
+# This is used to deploy the application to kubernetes
+# It should be published in diffrent repositories
+# See the README.md for more information
+argocd/
