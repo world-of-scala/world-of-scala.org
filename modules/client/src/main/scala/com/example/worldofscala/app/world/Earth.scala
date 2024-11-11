@@ -9,38 +9,76 @@ import typings.three.mod.*
 
 import com.raquo.laminar.nodes.ReactiveHtmlElement
 import org.scalajs.dom.HTMLDivElement
+import typings.three.srcMaterialsMeshBasicMaterialMod.MeshBasicMaterialParameters
+import typings.three.srcMaterialsPointsMaterialMod.PointsMaterialParameters
+import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
+import typings.three.examplesJsmAddonsMod.OrbitControls
 
 object Earth {
 
   def apply(div: ReactiveHtmlElement[HTMLDivElement]) =
     val scene  = new Scene();
-    val camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    val camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-    val renderer = new WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight - 128);
-//    document.body.appendChild(renderer.domElement);
+    val renderer = new WebGLRenderer(
+      WebGLRendererParameters().setAntialias(true)
+    );
+    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setSize(window.innerWidth * 0.88, window.innerHeight * .88);
 
-    val geometry = new BoxGeometry(1, 1, 1, 1, 1, 1);
+    val orbitControl = OrbitControls(camera, renderer.domElement)
 
-    val material = new MeshBasicMaterial() // MeshBasicMaterial.setColor(0x00ff00));
+    val detail = 60
 
-    val cube = new Mesh(geometry, material);
+    val geometry      = new IcosahedronGeometry(1, 100)
+    val pointGeometry = new IcosahedronGeometry(1, detail);
+
+    val textureLoader = TextureLoader()
+
+    val colorMap = textureLoader.load("/public/img/8081-earthmap10k.jpg")
+
+    val material = new MeshBasicMaterial(
+      MeshBasicMaterialParameters()
+        .setColor(0x202020)
+        .setWireframe(true)
+    );
+
+    val globeGroup: MeshObject3D = Group()
+
+    val cube: MeshObject3D = new Mesh(geometry, material);
+
+    globeGroup.add(cube)
+
+    val pointMaterial = PointsMaterial(
+      PointsMaterialParameters()
+//        .setColor(0x0000ff)
+        .setSize(0.02)
+        .setMap(colorMap)
+    )
+    val points: MeshObject3D = Points(pointGeometry, pointMaterial)
+
+    globeGroup.add(points)
 
     scene.add(
-      cube.asInstanceOf[typings.three.srcCoreObject3DMod.Object3D[typings.three.srcCoreObject3DMod.Object3DEventMap]]
+      globeGroup
     )
 
     camera.position.z = 5;
 
     val animate: XRFrameRequestCallback = (_, _) => {
 
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
+      // globeGroup.rotation.x += 0.01;
+      globeGroup.rotation.y += 0.002;
 
       renderer.render(scene, camera);
+      orbitControl.update()
 
     }
     renderer.setAnimationLoop(animate);
+
+    val light = HemisphereLight(0xffffff, 0x080820, 3)
+
+    scene.add(light)
 
     renderer.domElement
 
