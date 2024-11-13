@@ -23,7 +23,7 @@ object Router:
           pathPrefix(uiBase) {
             firstMatch(
               (pathEnd | path("index.html")) {
-                HomePage()
+                world.Earth(div())
               },
               path("signup") {
                 signup.SignupPage()
@@ -34,8 +34,8 @@ object Router:
               path("demos" / "scalablytyped") {
                 scalablytyped.ScalablytypedDemoPage()
               },
-              path("earth") {
-                world.Earth(div())
+              path("about") {
+                HomePage()
               }
             )
           },

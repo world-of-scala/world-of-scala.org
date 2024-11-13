@@ -21,14 +21,16 @@ object Earth {
     val camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 
     val renderer = new WebGLRenderer(
-      WebGLRendererParameters().setAntialias(true)
+      WebGLRendererParameters()
+        .setAntialias(true)
+        .setAlpha(true)
     );
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth * 0.88, window.innerHeight * .88);
 
     val orbitControl = OrbitControls(camera, renderer.domElement)
 
-    val detail = 60
+    val detail = 100
 
     val geometry      = new IcosahedronGeometry(1, 100)
     val pointGeometry = new IcosahedronGeometry(1, detail);
@@ -40,7 +42,8 @@ object Earth {
     val material = new MeshBasicMaterial(
       MeshBasicMaterialParameters()
         .setColor(0x202020)
-        .setWireframe(true)
+        .setWireframe(false)
+        .setAlphaToCoverage(true)
     );
 
     val globeGroup: MeshObject3D = Group()
@@ -51,7 +54,7 @@ object Earth {
 
     val pointMaterial = PointsMaterial(
       PointsMaterialParameters()
-//        .setColor(0x0000ff)
+        .setColor(0xf0f0f0)
         .setSize(0.02)
         .setMap(colorMap)
     )
@@ -76,7 +79,7 @@ object Earth {
     }
     renderer.setAnimationLoop(animate);
 
-    val light = HemisphereLight(0xffffff, 0x080820, 3)
+    val light = HemisphereLight(0xffffff, 0xf8f8f0, 3)
 
     scene.add(light)
 
