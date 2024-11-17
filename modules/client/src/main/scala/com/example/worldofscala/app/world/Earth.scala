@@ -13,27 +13,33 @@ import typings.three.srcMaterialsMeshBasicMaterialMod.MeshBasicMaterialParameter
 import typings.three.srcMaterialsPointsMaterialMod.PointsMaterialParameters
 import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
 import typings.three.examplesJsmAddonsMod.OrbitControls
+import typings.three.examplesJsmAddonsMod.GLTFLoader
+import scala.scalajs.js.Math.{PI, cos, sin}
 
 object Earth {
+
+  val R = 1
 
   def apply(div: ReactiveHtmlElement[HTMLDivElement]) =
     val scene  = new Scene();
     val camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 
+    camera.position.set(0, 0, 5)
+
     val renderer = new WebGLRenderer(
       WebGLRendererParameters()
         .setAntialias(true)
-        .setAlpha(true)
+        .setAlpha(false)
     );
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth * 0.88, window.innerHeight * .88);
 
     val orbitControl = OrbitControls(camera, renderer.domElement)
 
-    val detail = 100
+    val detail = 150
 
-    val geometry      = new IcosahedronGeometry(1, 100)
-    val pointGeometry = new IcosahedronGeometry(1, detail);
+    val geometry      = new IcosahedronGeometry(R - 0.05, 10)
+    val pointGeometry = new IcosahedronGeometry(R, detail);
 
     val textureLoader = TextureLoader()
 
@@ -48,9 +54,11 @@ object Earth {
 
     val globeGroup: MeshObject3D = Group()
 
-    val cube: MeshObject3D = new Mesh(geometry, material);
+    val earth: MeshObject3D = new Mesh(geometry, material);
 
-    globeGroup.add(cube)
+    println(earth)
+
+    globeGroup.add(earth)
 
     val pointMaterial = PointsMaterial(
       PointsMaterialParameters()
@@ -62,15 +70,36 @@ object Earth {
 
     globeGroup.add(points)
 
+    val loader = new GLTFLoader()
+    loader.load(
+      "/public/res/pinner.glb",
+      (obj) => {
+
+        addPoint(46.5188, 6.5593)
+        addPoint(43.604997973579614, 3.8660556077984163)
+        addPoint(37.7471355990712, -122.38776282253441)
+
+        def addPoint(lat: Double, lon: Double) =
+          val pinner    = obj.scene.clone(true)
+          val (x, y, z) = coord(lat, lon)
+          pinner.position.set(x, y, z)
+          globeGroup.add(pinner)
+
+      }
+    )
+
     scene.add(
       globeGroup
     )
 
-    camera.position.z = 5;
+    // globeGroup.rotation.y = PI / 2
+    // globeGroup.rotation.x = PI / 4
+
+    // camera.position.z = 5;
 
     val animate: XRFrameRequestCallback = (_, _) => {
 
-      // globeGroup.rotation.x += 0.01;
+      //  globeGroup.rotation.x += 0.001;
       globeGroup.rotation.y += 0.002;
 
       renderer.render(scene, camera);
@@ -79,8 +108,10 @@ object Earth {
     }
     renderer.setAnimationLoop(animate);
 
-    val light = HemisphereLight(0xffffff, 0xf8f8f0, 3)
+    val light = DirectionalLight(0xffffff, 100)
 
+    light.position.set(5, 5, 5)
+    light.lookAt(0, 0, 0)
     scene.add(light)
 
     renderer.domElement
@@ -89,4 +120,10 @@ object Earth {
 
     div
 
+  def coord(lat: Double, lon: Double) = {
+    val latRad = lat * PI / 180.0;
+    val lonRad = (-lon + 180) * PI / 180.0;
+    (cos(latRad) * cos(lonRad), sin(latRad), cos(latRad) * sin(lonRad));
+
+  }
 }
