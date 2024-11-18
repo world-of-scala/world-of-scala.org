@@ -15,6 +15,7 @@ import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
 import typings.three.examplesJsmAddonsMod.OrbitControls
 import typings.three.examplesJsmAddonsMod.GLTFLoader
 import scala.scalajs.js.Math.{PI, cos, sin}
+import typings.three.srcMaterialsLineBasicMaterialMod.LineBasicMaterialParameters
 
 object Earth {
 
@@ -75,10 +76,10 @@ object Earth {
       "/public/res/pinner.glb",
       (obj) => {
 
-        addPoint(46.5188, 6.5593)
-        addPoint(43.604997973579614, 3.8660556077984163)
-        addPoint(37.7471355990712, -122.38776282253441)
-
+        addPoint(46.5188, 6.5593)                        // Lauzane
+        addPoint(43.604997973579614, 3.8660556077984163) // Montpellier
+        addPoint(37.7471355990712, -122.38776282253441)  // SF
+        addPoint(0, 0)
         def addPoint(lat: Double, lon: Double) =
           val pinner    = obj.scene.clone(true)
           val (x, y, z) = coord(lat, lon)
@@ -88,19 +89,21 @@ object Earth {
       }
     )
 
+    globeGroup.add(drawLine())
+
     scene.add(
       globeGroup
     )
 
-    // globeGroup.rotation.y = PI / 2
-    // globeGroup.rotation.x = PI / 4
+    globeGroup.rotation.y = PI / 2
+    globeGroup.rotation.x = PI / 4
 
     // camera.position.z = 5;
 
     val animate: XRFrameRequestCallback = (_, _) => {
 
       //  globeGroup.rotation.x += 0.001;
-      globeGroup.rotation.y += 0.002;
+      // globeGroup.rotation.y += 0.002;
 
       renderer.render(scene, camera);
       orbitControl.update()
@@ -120,10 +123,27 @@ object Earth {
 
     div
 
+  def drawLine(): typings.three.srcCoreObject3DMod.Object3D[typings.three.srcCoreObject3DMod.Object3DEventMap] = {
+    val material = new LineBasicMaterial(LineBasicMaterialParameters().setColor(0x0000ff))
+    val points
+      : scala.scalajs.js.Array[typings.three.srcMathVector2Mod.Vector2 | typings.three.srcMathVector3Mod.Vector3] =
+      scala.scalajs.js.Array[typings.three.srcMathVector2Mod.Vector2 | typings.three.srcMathVector3Mod.Vector3](
+        new typings.three.srcMathVector3Mod.Vector3(0, 0, 0),
+//        new typings.three.srcMathVector3Mod.Vector3(0, 10, 0),
+        new typings.three.srcMathVector3Mod.Vector3(10, 10, 10)
+      )
+    val geometry = new BufferGeometry().setFromPoints(
+      points
+    );
+    val line: Line[BufferGeometry[Nothing], LineBasicMaterial, Nothing] = new Line(geometry, material);
+    line
+  }
+
   def coord(lat: Double, lon: Double) = {
     val latRad = lat * PI / 180.0;
     val lonRad = (-lon + 180) * PI / 180.0;
-    (cos(latRad) * cos(lonRad), sin(latRad), cos(latRad) * sin(lonRad));
+    val d      = R + 0.02
+    (d * cos(latRad) * cos(lonRad), d * sin(latRad), d * cos(latRad) * sin(lonRad));
 
   }
 }
