@@ -84,6 +84,7 @@ object Earth {
           val pinner    = obj.scene.clone(true)
           val (x, y, z) = coord(lat, lon)
           pinner.position.set(x, y, z)
+          pinner.lookAt(0, 0, 0)
           globeGroup.add(pinner)
 
       }
