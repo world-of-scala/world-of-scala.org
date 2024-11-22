@@ -38,7 +38,7 @@ object Earth {
 
     val orbitControl = OrbitControls(camera, renderer.domElement)
 
-    val detail = 150
+    val detail = 300
 
     val geometry      = new IcosahedronGeometry(R - 0.05, 10)
     val pointGeometry = new IcosahedronGeometry(R, detail);
@@ -89,7 +89,6 @@ object Earth {
     loader.load(
       "/public/res/scala.glb",
       (obj) => {
-        println(s"====>${obj.scene.visible}")
         addObj2(obj, 46.5188, 6.5593) // Lauzane
       }
     )
@@ -97,7 +96,6 @@ object Earth {
     loader.load(
       "/public/res/pinner.glb",
       (obj) => {
-//        println(s"${obj.scene.position.x}, ${obj.scene.position.y}, ${obj.scene.position.z} ")
         addObj(obj, 43.604997973579614, 3.8660556077984163) // Montpellier
         addObj(obj, 37.7471355990712, -122.38776282253441)  // SF
         addObj(obj, 0, 0)
@@ -113,12 +111,10 @@ object Earth {
     globeGroup.rotation.y = PI / 2
     globeGroup.rotation.x = PI / 4
 
-    // camera.position.z = 5;
-
     val animate: XRFrameRequestCallback = (_, _) => {
 
-      //  globeGroup.rotation.x += 0.001;
-      // globeGroup.rotation.y += 0.002;
+      // globeGroup.rotation.x += 0.001;
+      globeGroup.rotation.y += 0.002;
 
       renderer.render(scene, camera);
       orbitControl.update()
