@@ -16,6 +16,7 @@ import typings.three.examplesJsmAddonsMod.OrbitControls
 import typings.three.examplesJsmAddonsMod.GLTFLoader
 import scala.scalajs.js.Math.{PI, cos, sin}
 import typings.three.srcMaterialsLineBasicMaterialMod.LineBasicMaterialParameters
+import typings.three.examplesJsmLoadersGltfloaderMod.GLTF
 
 object Earth {
 
@@ -57,8 +58,6 @@ object Earth {
 
     val earth: MeshObject3D = new Mesh(geometry, material);
 
-    println(earth)
-
     globeGroup.add(earth)
 
     val pointMaterial = PointsMaterial(
@@ -71,22 +70,37 @@ object Earth {
 
     globeGroup.add(points)
 
+    def addObj(obj: GLTF, lat: Double, lon: Double) =
+      val pinner    = obj.scene.clone(true)
+      val (x, y, z) = coord(lat, lon)
+      pinner.position.set(x, y, z)
+      pinner.lookAt(0, 0, 0)
+      globeGroup.add(pinner)
+
+    def addObj2(obj: GLTF, lat: Double, lon: Double) =
+      val pinner    = obj.scene.clone(true)
+      val (x, y, z) = coord(lat, lon)
+      pinner.position.set(x, y, z)
+      pinner.lookAt(0, 0, 0)
+      globeGroup.add(pinner)
+
     val loader = new GLTFLoader()
+
+    loader.load(
+      "/public/res/scala.glb",
+      (obj) => {
+        println(s"====>${obj.scene.visible}")
+        addObj2(obj, 46.5188, 6.5593) // Lauzane
+      }
+    )
+
     loader.load(
       "/public/res/pinner.glb",
       (obj) => {
-
-        addPoint(46.5188, 6.5593)                        // Lauzane
-        addPoint(43.604997973579614, 3.8660556077984163) // Montpellier
-        addPoint(37.7471355990712, -122.38776282253441)  // SF
-        addPoint(0, 0)
-        def addPoint(lat: Double, lon: Double) =
-          val pinner    = obj.scene.clone(true)
-          val (x, y, z) = coord(lat, lon)
-          pinner.position.set(x, y, z)
-          pinner.lookAt(0, 0, 0)
-          globeGroup.add(pinner)
-
+//        println(s"${obj.scene.position.x}, ${obj.scene.position.y}, ${obj.scene.position.z} ")
+        addObj(obj, 43.604997973579614, 3.8660556077984163) // Montpellier
+        addObj(obj, 37.7471355990712, -122.38776282253441)  // SF
+        addObj(obj, 0, 0)
       }
     )
 
