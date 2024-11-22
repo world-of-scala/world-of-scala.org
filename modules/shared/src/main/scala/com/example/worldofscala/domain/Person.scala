@@ -11,19 +11,17 @@ import dev.cheleb.scalamigen.NoPanel
 
 @NoPanel
 case class Person(
-  name: String,
+  firstname: String,
+  lastname: String,
   email: String,
   password: Password,
-  passwordConfirmation: Password,
-  age: Int,
-  pet: Either[Cat, Dog]
+  passwordConfirmation: Password
 ) derives JsonCodec,
       Schema,
       Debug {
   def errorMessages = {
     val passwordErrors = if password == passwordConfirmation then Nil else List("Passwords do not match")
-    val ageErrors      = if age >= 18 then Nil else List("You must be at least 18 years old")
-    passwordErrors ++ ageErrors
+    passwordErrors
   }
 }
 

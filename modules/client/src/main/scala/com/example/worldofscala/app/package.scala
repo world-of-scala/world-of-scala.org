@@ -7,12 +7,6 @@ import dev.cheleb.ziolaminartapir.*
 
 import com.example.worldofscala.domain.*
 
-given Defaultable[Cat] with
-  def default = Cat("")
-
-given Defaultable[Dog] with
-  def default = Dog("", 1)
-
 given Form[Password] = secretForm(Password(_))
 
 given f: WidgetFactory = UI5WidgetFactory

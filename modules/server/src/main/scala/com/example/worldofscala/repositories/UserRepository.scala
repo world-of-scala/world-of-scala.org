@@ -4,7 +4,6 @@ import zio.*
 
 import com.example.worldofscala.UserEntity
 import com.example.worldofscala.NewUserEntity
-import com.example.worldofscala.domain.PetType
 
 import io.getquill.*
 import io.getquill.jdbczio.*
@@ -30,11 +29,6 @@ class UserRepositoryLive private (quill: Quill.Postgres[SnakeCase]) extends User
   inline given InsertMeta[NewUserEntity] = insertMeta[NewUserEntity](_.id)
   inline given SchemaMeta[UserEntity]    = schemaMeta[UserEntity]("users")
   inline given UpdateMeta[UserEntity]    = updateMeta[UserEntity](_.id, _.creationDate)
-
-  inline given MappedEncoding[PetType, String] =
-    MappedEncoding[PetType, String](_.toString)
-  inline given MappedEncoding[String, PetType] =
-    MappedEncoding[String, PetType](PetType.valueOf)
 
   override def create(user: NewUserEntity): Task[UserEntity] =
     run(query[NewUserEntity].insertValue(lift(user)).returning(r => r))

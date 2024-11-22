@@ -68,8 +68,7 @@ object HttpServer extends ZIOAppDefault {
         JWTServiceLive.configuredLayer,
         // Repository layers
         UserRepositoryLive.layer,
-        PetRepositoryLive.layer,
         Repository.dataLayer
-        //,ZLayer.Debug.mermaid
+        // ,ZLayer.Debug.mermaid
       )
 }

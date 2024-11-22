@@ -21,11 +21,10 @@ object PersonEndpoint extends BaseEndpoint:
         .example(
           Person(
             "John",
+            "Does",
             "john.doe@foo.bar",
             Password("notsecured"),
-            Password("notsecured"),
-            42,
-            Left(Cat("Fluffy"))
+            Password("notsecured")
           )
         )
     )
@@ -43,11 +42,10 @@ object PersonEndpoint extends BaseEndpoint:
     .out(jsonBody[UserToken])
     .description("Login")
 
-  val profile: Endpoint[String, Boolean, Throwable, (User, Option[Pet]), Any] = baseSecuredEndpoint
+  val profile: Endpoint[String, Unit, Throwable, User, Any] = baseSecuredEndpoint
     .tag("person")
     .name("profile")
     .get
     .in("profile")
-    .in(query[Boolean]("withPet").default(false))
-    .out(jsonBody[(User, Option[Pet])])
+    .out(jsonBody[User])
     .description("Get profile")

@@ -6,12 +6,10 @@ import java.time.ZonedDateTime
 
 case class User(
   id: Long,
-  name: String,
+  firstname: String,
+  lastname: String,
   email: String,
-  petId: Option[Long],
-  petType: Option[PetType],
   hashedPassword: String,
-  age: Int,
   creationDate: ZonedDateTime
 ) derives JsonCodec,
       Schema

@@ -19,7 +19,7 @@ import com.example.worldofscala.http.endpoints.PersonEndpoint
 object SignupPage:
   def apply() =
     val personVar = Var(
-      Person("John", "john.does@foo.bar", Password("notsecured"), Password("notsecured"), 42, Left(Cat("Fluffy")))
+      Person("John", "Does", "john.does@foo.bar", Password("notsecured"), Password("notsecured"))
     )
     val userBus  = EventBus[User]()
     val errorBus = EventBus[Throwable]()
@@ -63,8 +63,8 @@ object SignupPage:
     div(
       h2("User"),
       div(s"Id: ${user.id}"),
-      div(s"Name: ${user.name}"),
-      div(s"Age: ${user.age}"),
+      div(s"Name: ${user.firstname}"),
+      div(s"Name: ${user.lastname}"),
       div(s"Creation Date: ${user.creationDate}")
     )
 

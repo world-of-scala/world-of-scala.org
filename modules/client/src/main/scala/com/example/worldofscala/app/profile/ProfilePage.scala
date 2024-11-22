@@ -12,7 +12,7 @@ import com.raquo.laminar.nodes.ReactiveHtmlElement
 
 object ProfilePage:
 
-  val userBus = new EventBus[(User, Option[Pet])]
+  val userBus = new EventBus[User]
 
   def apply(): ReactiveHtmlElement[HTMLDivElement] = div(
     child <-- session:
@@ -22,38 +22,17 @@ object ProfilePage:
     (_ =>
       div(
         onMountCallback { _ =>
-          PersonEndpoint.profile(false).emitTo(userBus)
+          PersonEndpoint.profile(()).emitTo(userBus)
         },
         div(
           h1("Profile Page"),
-          child <-- userBus.events.map { case (user, maybePet) =>
+          child <-- userBus.events.map { user =>
             div(
               cls := "srf-form",
               h2("User"),
-              div("Name: ", user.name),
-              div("Email: ", user.email),
-              div("Age: ", user.age.toString),
-              user.petType.map(pt => s"Has a $pt").getOrElse("No pet"),
-              input(
-                tpe     := "checkbox",
-                checked := maybePet.isDefined,
-                onInput.mapToChecked --> { withPet =>
-                  PersonEndpoint.profile(withPet).emitTo(userBus)
-                }
-              ),
-              maybePet.map { pet =>
-                div(
-                  h2("Pet"),
-                  div("Name: ", pet.name),
-                  div(
-                    "Type: ",
-                    pet match {
-                      case _: Cat => "Cat"
-                      case _: Dog => "Dog"
-                    }
-                  )
-                )
-              }.getOrElse(div())
+              div("First name: ", user.firstname),
+              div("Last name: ", user.lastname),
+              div("Email: ", user.email)
             )
           }
         )
