@@ -15,6 +15,7 @@ import com.example.worldofscala.config.JWTConfig
 import com.example.worldofscala.domain.*
 
 import sttp.model.Uri
+import java.util.UUID
 
 trait JWTService {
   def createToken(user: User): Task[UserToken]
@@ -56,7 +57,7 @@ class JWTServiceLive private (jwtConfig: JWTConfig, clock: JavaClock) extends JW
     for {
       decoded <- ZIO.attempt(verifier.verify(token))
       userID <- ZIO.attempt(
-                  UserID(decoded.getSubject().toLong, decoded.getClaim(CLAIN_USER_NAME).asString())
+                  UserID(UUID.fromString(decoded.getSubject()), decoded.getClaim(CLAIN_USER_NAME).asString())
                 )
     } yield userID
 }

@@ -3,9 +3,10 @@ package com.example.worldofscala.domain
 import zio.json.JsonCodec
 import sttp.tapir.Schema
 import java.time.ZonedDateTime
+import java.util.UUID
 
 case class User(
-  id: Long,
+  id: UUID,
   firstname: String,
   lastname: String,
   email: String,
@@ -14,4 +15,4 @@ case class User(
 ) derives JsonCodec,
       Schema
 
-case class UserID(id: Long, email: String) derives JsonCodec, Schema
+case class UserID(id: UUID, email: String) derives JsonCodec, Schema

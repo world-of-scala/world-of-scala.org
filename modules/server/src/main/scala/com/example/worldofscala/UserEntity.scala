@@ -3,9 +3,10 @@ package com.example.worldofscala
 import java.time.ZonedDateTime
 import com.example.worldofscala.domain.*
 import io.scalaland.chimney.Transformer
+import java.util.UUID
 
 case class NewUserEntity(
-  id: Option[Long],
+  id: Option[UUID],
   firstname: String,
   lastname: String,
   email: String,
@@ -14,7 +15,7 @@ case class NewUserEntity(
 )
 
 case class UserEntity(
-  id: Long,
+  id: UUID,
   firstname: String,
   lastname: String,
   email: String,
