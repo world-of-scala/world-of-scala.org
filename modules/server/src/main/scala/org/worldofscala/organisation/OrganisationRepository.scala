@@ -1,0 +1,28 @@
+package org.worldofscala.organisation
+
+import io.getquill.jdbczio.Quill
+import io.getquill.SnakeCase
+import org.worldofscala.*
+import io.getquill.*
+import io.scalaland.chimney.dsl.*
+
+import zio.*
+
+trait OrganisationRepository {
+  def create(org: NewOrganisationEntity): Task[OrganisationEntity]
+}
+
+class OrganisationRepositoryLive private (quill: Quill.Postgres[SnakeCase]) extends OrganisationRepository {
+  import quill.*
+
+  inline given SchemaMeta[NewOrganisationEntity] = schemaMeta[NewOrganisationEntity]("organisations")
+  inline given InsertMeta[NewOrganisationEntity] = insertMeta[NewOrganisationEntity](_.id)
+  inline given SchemaMeta[OrganisationEntity]    = schemaMeta[OrganisationEntity]("organisations")
+  inline given UpdateMeta[OrganisationEntity]    = updateMeta[OrganisationEntity](_.id, _.creationDate)
+
+  override def create(user: NewOrganisationEntity): Task[OrganisationEntity] =
+    run(query[NewOrganisationEntity].insertValue(lift(user)).returning(r => r))
+      .map(r => r.intoPartial[OrganisationEntity].transform.asOption)
+      .someOrFail(new RuntimeException(""))
+
+}
