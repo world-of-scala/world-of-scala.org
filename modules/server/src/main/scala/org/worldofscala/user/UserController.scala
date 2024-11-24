@@ -1,6 +1,6 @@
 package org.worldofscala.user
 
-import dev.cheleb.ziojwt.SecuredBaseController
+import dev.cheleb.ziotapir.SecuredBaseController
 
 import zio.*
 
@@ -8,13 +8,11 @@ import sttp.model.Uri
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
 
-import org.worldofscala.BaseController
 import org.worldofscala.domain.errors.NotHostHeaderException
 import org.worldofscala.auth.*
 
 class UserController private (personService: UserService, jwtService: JWTService)
-    extends BaseController
-    with SecuredBaseController[String, UserID](jwtService.verifyToken) {
+    extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
 
   val create: ServerEndpoint[Any, Task] = UserEndpoint.create
     .zServerLogic:

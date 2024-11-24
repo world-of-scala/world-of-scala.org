@@ -15,6 +15,7 @@ import org.worldofscala.repositories.*
 import org.worldofscala.user.UserRepositoryLive
 import org.worldofscala.user.UserServiceLive
 import org.worldofscala.auth.JWTServiceLive
+import org.worldofscala.organisation.*
 
 object HttpServer extends ZIOAppDefault {
 
@@ -66,10 +67,12 @@ object HttpServer extends ZIOAppDefault {
         Server.default,
         // Service layers
         UserServiceLive.layer,
+        OrganisationServiceLive.layer,
         FlywayServiceLive.configuredLayer,
         JWTServiceLive.configuredLayer,
         // Repository layers
         UserRepositoryLive.layer,
+        OrganisationRepositoryLive.layer,
         Repository.dataLayer
         // ,ZLayer.Debug.mermaid
       )

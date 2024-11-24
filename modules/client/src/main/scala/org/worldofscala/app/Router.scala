@@ -11,7 +11,7 @@ object Router:
   val uiBase                     = "public"
   def uiRoute(segments: String*) = segments.mkString(s"/$uiBase/", "/", "")
   private val externalUrlBus     = EventBus[String]()
-  val writer                     = externalUrlBus.writer
+  val writer                     = externalUrlBus
   def apply() =
     mainTag(
       linkHandler,

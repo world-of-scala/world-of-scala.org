@@ -5,7 +5,7 @@ import com.raquo.laminar.api.L.*
 import org.worldofscala.app.given
 import org.worldofscala.user.*
 
-import dev.cheleb.ziolaminartapir.*
+import dev.cheleb.ziotapir.laminar.*
 import org.scalajs.dom.HTMLDivElement
 import com.raquo.laminar.nodes.ReactiveHtmlElement
 

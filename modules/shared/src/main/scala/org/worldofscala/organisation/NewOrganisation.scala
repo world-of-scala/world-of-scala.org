@@ -9,16 +9,29 @@ import zio.prelude.*
 import zio.prelude.magnolia.*
 
 import dev.cheleb.scalamigen.NoPanel
+import zio.prelude.Debug.Repr
 
 @NoPanel
-case class Organisation(
+case class NewOrganisation(
   name: String,
   location: Option[LatLon]
 ) derives JsonCodec,
       Schema,
       Debug:
   def errorMessages: Seq[String] = Seq.empty
-  val o                          = 1
 
 @NoPanel
 case class LatLon(lat: Double, lon: Double) derives JsonCodec, Schema, Debug
+
+case class Organisation(
+  id: UUID,
+  name: String,
+  location: Option[LatLon]
+) derives JsonCodec,
+      Schema,
+      Debug:
+  def errorMessages: Seq[String] = Seq.empty
+
+object Organisation:
+  given Debug[UUID] with
+    def debug(value: UUID): Repr = Repr.String(value.toString)

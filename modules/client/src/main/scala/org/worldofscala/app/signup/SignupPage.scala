@@ -8,7 +8,7 @@ import be.doeraene.webcomponents.ui5.configkeys.ToastPlacement
 import com.raquo.laminar.api.L.*
 
 import dev.cheleb.scalamigen.*
-import dev.cheleb.ziolaminartapir.*
+import dev.cheleb.ziotapir.laminar.*
 
 import scala.concurrent.duration.DurationInt
 
@@ -18,7 +18,7 @@ import org.worldofscala.user.*
 object SignupPage:
   def apply() =
     val personVar = Var(
-      Person("John", "Does", "john.does@foo.bar", Password("notsecured"), Password("notsecured"))
+      NewUser("John", "Does", "john.does@foo.bar", Password("notsecured"), Password("notsecured"))
     )
     val userBus  = EventBus[User]()
     val errorBus = EventBus[Throwable]()
@@ -67,7 +67,7 @@ object SignupPage:
       div(s"Creation Date: ${user.creationDate}")
     )
 
-  def debugUI(debugVar: Var[Boolean], personVar: Var[Person]) =
+  def debugUI(debugVar: Var[Boolean], personVar: Var[NewUser]) =
     div(
       styleAttr := "float: right;",
       Switch(

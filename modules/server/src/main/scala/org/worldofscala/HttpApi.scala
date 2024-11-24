@@ -3,10 +3,11 @@ package org.worldofscala
 import zio.*
 import sttp.tapir.server.ServerEndpoint
 
-import org.worldofscala.BaseController
+import dev.cheleb.ziotapir.BaseController
 import org.worldofscala.auth.JWTService
 import org.worldofscala.health.HealthController
 import org.worldofscala.user.*
+import org.worldofscala.organisation.*
 
 import user.*
 
@@ -18,10 +19,11 @@ object HttpApi {
     controllers.flatMap(_.routes)
 
   private def makeControllers = for {
-    healthController <- HealthController.makeZIO
-    personController <- UserController.makeZIO
-  } yield List(healthController, personController)
+    healthController       <- HealthController.makeZIO
+    personController       <- UserController.makeZIO
+    organisationController <- OrganisationController.makeZIO
+  } yield List(healthController, personController, organisationController)
 
-  val endpointsZIO: URIO[UserService & JWTService, List[ServerEndpoint[Any, Task]]] =
+  val endpointsZIO: URIO[UserService & OrganisationService & JWTService, List[ServerEndpoint[Any, Task]]] =
     makeControllers.map(gatherRoutes)
 }

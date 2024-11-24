@@ -5,7 +5,8 @@ import be.doeraene.webcomponents.ui5.configkeys.*
 import com.raquo.laminar.api.L.*
 
 import dev.cheleb.scalamigen.*
-import dev.cheleb.ziolaminartapir.*
+
+import dev.cheleb.ziotapir.laminar.*
 
 import scala.concurrent.duration.DurationInt
 import org.worldofscala.auth.LoginPassword
@@ -85,6 +86,7 @@ object Header:
         .amend(
           onClick.mapTo(false) --> openPopoverBus
         ),
+      _.item(a("Organisation", href := Router.uiRoute("organisation", "new"))),
       _.item(_.icon := IconName.`bar-chart`, a("Statistics", href := Router.uiRoute("demos/scalablytyped"))),
       _.item(_.icon := IconName.log, "Sign out").amend(
         onClick --> { _ =>
@@ -97,6 +99,6 @@ object Header:
   def loginHandler(session: Session[UserToken]): Observer[Any] = Observer[Any] { _ =>
     UserEndpoint
       .login(credentials.now())
-      .map(token => session.saveToken(SameOriginBackendClientLive.backendBaseURL, token))
+      .map(token => session.saveToken(token))
       .emitTo(loginSuccessEventBus, loginErrorEventBus)
   }

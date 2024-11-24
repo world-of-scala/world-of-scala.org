@@ -4,7 +4,7 @@ import zio.*
 import sttp.tapir.*
 import sttp.tapir.server.ServerEndpoint
 import org.worldofscala.http.endpoints.HealthEndpoint
-import org.worldofscala.BaseController
+import dev.cheleb.ziotapir.BaseController
 
 class HealthController private extends BaseController with HealthEndpoint {
 

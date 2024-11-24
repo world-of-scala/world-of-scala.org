@@ -12,16 +12,16 @@ import org.worldofscala.auth.*
 
 object UserEndpoint extends BaseEndpoint:
 
-  val create: PublicEndpoint[Person, Throwable, User, Any] = baseEndpoint
+  val create: PublicEndpoint[NewUser, Throwable, User, Any] = baseEndpoint
     .tag("person")
     .name("person")
     .post
     .in("person")
     .in(
-      jsonBody[Person]
+      jsonBody[NewUser]
         .description("Person to create")
         .example(
-          Person(
+          NewUser(
             "John",
             "Does",
             "john.doe@foo.bar",

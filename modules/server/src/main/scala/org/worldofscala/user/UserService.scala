@@ -23,10 +23,10 @@ import io.scalaland.chimney.Transformer
 import org.worldofscala.domain.errors.{InvalidCredentialsException, UserNotFoundException, UserAlreadyExistsException}
 import org.worldofscala.auth.JWTService
 
-import org.worldofscala.ziochimney.*
+import dev.cheleb.ziochimney.*
 
 trait UserService {
-  def register(person: Person): Task[User]
+  def register(person: NewUser): Task[User]
   def login(email: String, password: String): Task[User]
   def getProfile(userId: UserID): Task[User]
 }
@@ -38,7 +38,7 @@ class UserServiceLive private (
 ) extends UserService
     with TransactionSupport(quill) {
 
-  def register(person: Person): Task[User] =
+  def register(person: NewUser): Task[User] =
     tx(
       for {
         _ <- ZIO.logDebug(s"Registering user: $person")

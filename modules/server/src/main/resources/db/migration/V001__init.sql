@@ -6,7 +6,7 @@ CREATE TABLE "users"(
     lastname text NOT NULL,
     email text NOT NULL UNIQUE,
     hashed_password text NOT NULL,
-    creation_date timestamp NOT NULL,
+    creation_date timestamp NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
 );
 
@@ -19,10 +19,10 @@ CREATE TABLE meshes(
 CREATE TABLE organisations(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     name text NOT NULL,
-    meshes_id uuid REFERENCES meshes(id),
+    mesh_id uuid REFERENCES meshes(id),
     lat float,
     long float,
-    creation_date timestamp NOT NULL,
+    creation_date timestamp NOT NULL DEFAULT now(),
     PRIMARY KEY (id)
 );
 

@@ -16,7 +16,7 @@ class OrganisationRepositoryLive private (quill: Quill.Postgres[SnakeCase]) exte
   import quill.*
 
   inline given SchemaMeta[NewOrganisationEntity] = schemaMeta[NewOrganisationEntity]("organisations")
-  inline given InsertMeta[NewOrganisationEntity] = insertMeta[NewOrganisationEntity](_.id)
+  inline given InsertMeta[NewOrganisationEntity] = insertMeta[NewOrganisationEntity](_.id, _.creationDate)
   inline given SchemaMeta[OrganisationEntity]    = schemaMeta[OrganisationEntity]("organisations")
   inline given UpdateMeta[OrganisationEntity]    = updateMeta[OrganisationEntity](_.id, _.creationDate)
 
@@ -25,4 +25,9 @@ class OrganisationRepositoryLive private (quill: Quill.Postgres[SnakeCase]) exte
       .map(r => r.intoPartial[OrganisationEntity].transform.asOption)
       .someOrFail(new RuntimeException(""))
 
+}
+
+object OrganisationRepositoryLive {
+  def layer: URLayer[Quill.Postgres[SnakeCase], OrganisationRepository] =
+    ZLayer.derive[OrganisationRepositoryLive]
 }
