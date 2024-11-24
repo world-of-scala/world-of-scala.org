@@ -15,9 +15,9 @@ import org.worldofscala.user.UserID
 class OrganisationController private (organisationService: OrganisationService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
 
-  val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create
-    .zServerLogic:
-      organisationService.create
+  val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create.securedServerLogic { userId => organisation =>
+    organisationService.create(organisation)
+  }
 
   val routes: List[ServerEndpoint[Any, Task]] =
     List(create)

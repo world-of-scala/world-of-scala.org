@@ -12,7 +12,7 @@ import org.worldofscala.auth.*
 
 object OrganisationEndpoint extends BaseEndpoint:
 
-  val create: PublicEndpoint[NewOrganisation, Throwable, Organisation, Any] = baseEndpoint
+  val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint
     .tag("Admin")
     .name("organisation")
     .post
@@ -29,3 +29,11 @@ object OrganisationEndpoint extends BaseEndpoint:
     )
     .out(jsonBody[Organisation])
     .description("Create person")
+
+  val all: PublicEndpoint[Unit, Throwable, List[Organisation], Any] = baseEndpoint
+    .tag("Admin")
+    .name("organisation")
+    .get
+    .in("organisation")
+    .out(jsonBody[List[Organisation]])
+    .description("Get all organisations")
