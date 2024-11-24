@@ -7,10 +7,23 @@ import org.scalafmt.config.Indents.RelativeToLhs.`match`
 
 trait OrganisationService {
   def create(organisation: NewOrganisation): Task[Organisation]
+  def listAll(): Task[List[Organisation]]
 
 }
 
 case class OrganisationServiceLive(organisationRepository: OrganisationRepository) extends OrganisationService {
+
+  override def listAll(): Task[List[Organisation]] = organisationRepository
+    .listAll()
+    .map(entities =>
+      entities.map(entity =>
+        entity
+          .into[Organisation]
+          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, lat))))
+          .transform
+      )
+    )
+
   override def create(organisation: NewOrganisation): Task[Organisation] =
 
     val organisationEntity = organisation.location match

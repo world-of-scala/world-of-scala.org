@@ -19,8 +19,12 @@ class OrganisationController private (organisationService: OrganisationService, 
     organisationService.create(organisation)
   }
 
+  val listAll: ServerEndpoint[Any, Task] = OrganisationEndpoint.all.zServerLogic { _ =>
+    organisationService.listAll()
+  }
+
   val routes: List[ServerEndpoint[Any, Task]] =
-    List(create)
+    List(create, listAll)
 
 }
 

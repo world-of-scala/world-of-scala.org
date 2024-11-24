@@ -10,6 +10,7 @@ import zio.*
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]
+  def listAll(): Task[List[OrganisationEntity]]
 }
 
 class OrganisationRepositoryLive private (quill: Quill.Postgres[SnakeCase]) extends OrganisationRepository {
@@ -25,6 +26,7 @@ class OrganisationRepositoryLive private (quill: Quill.Postgres[SnakeCase]) exte
       .map(r => r.intoPartial[OrganisationEntity].transform.asOption)
       .someOrFail(new RuntimeException(""))
 
+  override def listAll(): Task[List[OrganisationEntity]] = run(query[OrganisationEntity])
 }
 
 object OrganisationRepositoryLive {
