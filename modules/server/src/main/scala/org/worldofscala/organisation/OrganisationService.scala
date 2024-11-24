@@ -19,7 +19,7 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
       entities.map(entity =>
         entity
           .into[Organisation]
-          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, lat))))
+          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, long))))
           .transform
       )
     )

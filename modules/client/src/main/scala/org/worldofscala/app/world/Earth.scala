@@ -17,12 +17,17 @@ import typings.three.examplesJsmAddonsMod.GLTFLoader
 import scala.scalajs.js.Math.{PI, cos, sin}
 import typings.three.srcMaterialsLineBasicMaterialMod.LineBasicMaterialParameters
 import typings.three.examplesJsmLoadersGltfloaderMod.GLTF
+import com.raquo.airstream.eventbus.EventBus
+import org.worldofscala.organisation.Organisation
+import com.raquo.airstream.ownership.Owner
 
 object Earth {
 
   val R = 1
 
-  def apply(div: ReactiveHtmlElement[HTMLDivElement]) =
+  val organisationBus = new EventBus[List[Organisation]]
+
+  def apply(owner: Owner, div: ReactiveHtmlElement[HTMLDivElement]) =
     val scene  = new Scene();
     val camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -96,8 +101,18 @@ object Earth {
     loader.load(
       "/public/res/pinner.glb",
       (obj) => {
-        addObj(obj, 43.604997973579614, 3.8660556077984163) // Montpellier
-        addObj(obj, 37.7471355990712, -122.38776282253441)  // SF
+
+        organisationBus.events.foreach { organisations =>
+          organisations.foreach { organisation =>
+            organisation.location.foreach { location =>
+              addObj(obj, location.lat, location.lon)
+              println(s"Adding ${organisation.name} at ${location.lat}, ${location.lon}")
+            }
+          }
+        }(owner)
+
+        // addObj(obj, 43.604997973579614, 3.8660556077984163) // Montpellier
+        // addObj(obj, 37.7471355990712, -122.38776282253441)  // SF
         addObj(obj, 0, 0)
       }
     )
@@ -114,7 +129,7 @@ object Earth {
     val animate: XRFrameRequestCallback = (_, _) => {
 
       // globeGroup.rotation.x += 0.001;
-      globeGroup.rotation.y += 0.002;
+      // globeGroup.rotation.y += 0.002;
 
       renderer.render(scene, camera);
       orbitControl.update()
@@ -128,8 +143,6 @@ object Earth {
     light.lookAt(0, 0, 0)
     scene.add(light)
 
-    renderer.domElement
-
     div.ref.append(renderer.domElement)
 
     div
@@ -140,7 +153,6 @@ object Earth {
       : scala.scalajs.js.Array[typings.three.srcMathVector2Mod.Vector2 | typings.three.srcMathVector3Mod.Vector3] =
       scala.scalajs.js.Array[typings.three.srcMathVector2Mod.Vector2 | typings.three.srcMathVector3Mod.Vector3](
         new typings.three.srcMathVector3Mod.Vector3(0, 0, 0),
-//        new typings.three.srcMathVector3Mod.Vector3(0, 10, 0),
         new typings.three.srcMathVector3Mod.Vector3(10, 10, 10)
       )
     val geometry = new BufferGeometry().setFromPoints(

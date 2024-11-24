@@ -1,11 +1,17 @@
 package org.worldofscala.app
 
 import com.raquo.laminar.api.L.*
+
+import dev.cheleb.ziotapir.laminar.*
+
 import frontroute.*
 
 import org.scalajs.dom
 
 import org.worldofscala.*
+import org.worldofscala.organisation.OrganisationEndpoint
+import com.raquo.laminar.nodes.ReactiveHtmlElement
+import org.scalajs.dom.HTMLDivElement
 
 object Router:
   val uiBase                     = "public"
@@ -23,7 +29,16 @@ object Router:
           pathPrefix(uiBase) {
             firstMatch(
               (pathEnd | path("index.html")) {
-                world.Earth(div())
+                val earthVar = Var(Option.empty[ReactiveHtmlElement[HTMLDivElement]])
+                div(
+                  onMountCallback { ctx =>
+                    OrganisationEndpoint.all(()).emitTo(world.Earth.organisationBus) // (ctx.owner)
+                    earthVar.set(Some(world.Earth(ctx.owner, div())))
+//                    world.Earth.organisationBus.events.foreach(organisation => println(organisation))(ctx.owner)
+                  },
+                  child.maybe <-- earthVar.signal
+                )
+
               },
               path("signup") {
                 signup.SignupPage()
