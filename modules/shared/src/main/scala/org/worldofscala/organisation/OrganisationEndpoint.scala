@@ -9,7 +9,9 @@ import org.worldofscala.auth.LoginPassword
 import sttp.model.HeaderNames
 import org.worldofscala.BaseEndpoint
 import org.worldofscala.auth.*
+import sttp.capabilities.zio.ZioStreams
 
+import zio.stream.*
 object OrganisationEndpoint extends BaseEndpoint:
 
   val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint
@@ -36,4 +38,12 @@ object OrganisationEndpoint extends BaseEndpoint:
     .get
     .in("organisation")
     .out(jsonBody[List[Organisation]])
+    .description("Get all organisations")
+
+  val allStream: Endpoint[Unit, Unit, Throwable, Stream[Throwable, Byte], ZioStreams] = baseEndpoint
+    .tag("Admin")
+    .name("organisation stream")
+    .get
+    .in("organisation" / "stream")
+    .out(streamBody(ZioStreams)(summon[Schema[Organisation]], CodecFormat.Json()))
     .description("Get all organisations")

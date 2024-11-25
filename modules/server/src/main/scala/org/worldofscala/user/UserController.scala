@@ -7,6 +7,7 @@ import zio.*
 import sttp.model.Uri
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
+import sttp.capabilities.zio.ZioStreams
 
 import org.worldofscala.domain.errors.NotHostHeaderException
 import org.worldofscala.auth.*
@@ -29,8 +30,8 @@ class UserController private (personService: UserService, jwtService: JWTService
     personService.getProfile(userId)
   }
 
-  val routes: List[ServerEndpoint[Any, Task]] =
-    List(create, login, profile)
+  val routes: (List[ServerEndpoint[Any, Task]], List[ZServerEndpoint[Any, ZioStreams]]) =
+    (List(create, login, profile), List.empty)
 }
 
 object UserController {
