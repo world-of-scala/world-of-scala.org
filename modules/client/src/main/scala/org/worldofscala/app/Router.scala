@@ -7,11 +7,17 @@ import dev.cheleb.ziotapir.laminar.*
 import frontroute.*
 
 import org.scalajs.dom
+import zio.json.*
 
 import org.worldofscala.*
 import org.worldofscala.organisation.OrganisationEndpoint
 import com.raquo.laminar.nodes.ReactiveHtmlElement
 import org.scalajs.dom.HTMLDivElement
+import zio.stream.ZPipeline
+import org.worldofscala.organisation.Organisation
+
+import zio.Console
+import zio.ZIO
 
 object Router:
   val uiBase                     = "public"
@@ -32,7 +38,20 @@ object Router:
                 val earthVar = Var(Option.empty[ReactiveHtmlElement[HTMLDivElement]])
                 div(
                   onMountCallback { ctx =>
-                    OrganisationEndpoint.all(()).emitTo(world.Earth.organisationBus) // (ctx.owner)
+                    OrganisationEndpoint
+                      .allStream(())
+                      .flatMap(stream =>
+                        stream
+                          .via(ZPipeline.utf8Decode)
+                          .via(ZPipeline.splitLines)
+                          .tap(line => Console.printLine(line))
+                          .via(ZPipeline.map(_.fromJson[Organisation].toOption.get))
+                          .tap(organisation => Console.printLine(organisation))
+                          .runForeach(organisation => ZIO.attempt(world.Earth.organisationBus.emit(organisation)))
+                      )
+                      .runJs
+
+//                    .emitTo(world.Earth.organisationBus) // (ctx.owner)
                     earthVar.set(Some(world.Earth(ctx.owner, div())))
 //                    world.Earth.organisationBus.events.foreach(organisation => println(organisation))(ctx.owner)
                   },

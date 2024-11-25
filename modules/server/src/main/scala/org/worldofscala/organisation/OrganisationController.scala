@@ -29,17 +29,18 @@ class OrganisationController private (organisationService: OrganisationService, 
   }
 
   val streamAll: ZServerEndpoint[Any, ZioStreams] = OrganisationEndpoint.allStream.zServerLogic { _ =>
-    val size = 10L
+    // val size = 10L
 
-    val stream = ZStream
-      .tick(Duration.fromMillis(100))
-      .map(i => Organisation(id = UUID.randomUUID, name = i.toString, None))
-      .take(size)
-      .map(e => e.toJson.getBytes().toList)
-      .mapError(_ => new Throwable("Error"))
-      .flattenIterables
+    // val stream = ZStream
+    //   .tick(Duration.fromMillis(100))
+    //   .map(i => Organisation(id = UUID.randomUUID, name = i.toString, None))
+    //   .take(size)
+    //   .map(e => (e.toJson+"\n").getBytes().toList)
+    //   .mapError(_ => new Throwable("Error"))
+    //   .flattenIterables
 
-    ZIO.succeed(stream)
+    // ZIO.succeed(stream)
+    organisationService.streamAll()
   }
 
   val routes: (List[ServerEndpoint[Any, Task]], List[ZServerEndpoint[Any, ZioStreams]]) =
