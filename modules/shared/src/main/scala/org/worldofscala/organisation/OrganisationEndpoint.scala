@@ -12,6 +12,8 @@ import org.worldofscala.auth.*
 import sttp.capabilities.zio.ZioStreams
 
 import zio.stream.*
+import sttp.model.Header
+import sttp.model.MediaType
 object OrganisationEndpoint extends BaseEndpoint:
 
   val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint
@@ -45,5 +47,5 @@ object OrganisationEndpoint extends BaseEndpoint:
     .name("organisation stream")
     .get
     .in("organisation" / "stream")
-    .out(streamBody(ZioStreams)(summon[Schema[Organisation]], CodecFormat.Json()))
+    .out(streamBody(ZioStreams)(Schema.derived[Organisation], CodecFormat.TextEventStream()))
     .description("Get all organisations")
