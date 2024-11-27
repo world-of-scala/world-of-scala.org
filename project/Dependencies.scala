@@ -18,10 +18,10 @@ object Dependencies {
     val slf4j                 = "2.0.16"
     val stripe                = "25.10.0"
     val sttp                  = "3.9.6"
-    val tapir                 = "1.11.5"
+    val tapir                 = "1.11.9"
     val zio                   = "2.1.11"
     val zioConfig             = "4.0.2"
-    val zioLaminarTapir       = "0.5.1"
+    val zioLaminarTapir       = "0.6.0"
     val zioLogging            = "2.2.4"
     val zioPrelude            = "1.0.0-RC34"
   }
@@ -69,10 +69,11 @@ object Dependencies {
 
   val sharedJvmAndJsLibraryDependencies: Setting[Seq[ModuleID]] =
     libraryDependencies ++= Seq(
+      "com.softwaremill.sttp.tapir" %%% "tapir-zio"                      % Versions.tapir,
       "com.softwaremill.sttp.tapir" %%% "tapir-iron"                     % Versions.tapir,
       "com.softwaremill.sttp.tapir" %%% "tapir-json-zio"                 % Versions.tapir,
       "dev.cheleb"                  %%% "laminar-form-derivation-shared" % Versions.laminarFormDerivation,
-      "dev.cheleb"                  %%% "zio-tapir-shared"                        % Versions.zioLaminarTapir,
+      "dev.cheleb"                  %%% "zio-tapir-shared"               % Versions.zioLaminarTapir,
       "dev.zio"                     %%% "zio-prelude"                    % Versions.zioPrelude,
       "dev.zio"                     %%% "zio-prelude-magnolia"           % Versions.zioPrelude,
       "io.github.iltotore"           %% "iron-zio-json"                  % Versions.iron

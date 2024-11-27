@@ -13,6 +13,10 @@ import org.worldofscala.organisation.OrganisationEndpoint
 import com.raquo.laminar.nodes.ReactiveHtmlElement
 import org.scalajs.dom.HTMLDivElement
 
+import org.worldofscala.organisation.Organisation
+
+import zio.ZIO
+
 object Router:
   val uiBase                     = "public"
   def uiRoute(segments: String*) = segments.mkString(s"/$uiBase/", "/", "")
@@ -32,9 +36,14 @@ object Router:
                 val earthVar = Var(Option.empty[ReactiveHtmlElement[HTMLDivElement]])
                 div(
                   onMountCallback { ctx =>
-                    OrganisationEndpoint.all(()).emitTo(world.Earth.organisationBus) // (ctx.owner)
+                    OrganisationEndpoint
+                      .allStream(())
+                      .jsonl[Organisation, Unit](organisation =>
+                        ZIO.attempt(world.Earth.organisationBus.emit(organisation))
+                      )
+
                     earthVar.set(Some(world.Earth(ctx.owner, div())))
-//                    world.Earth.organisationBus.events.foreach(organisation => println(organisation))(ctx.owner)
+
                   },
                   child.maybe <-- earthVar.signal
                 )

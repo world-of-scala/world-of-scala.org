@@ -25,7 +25,7 @@ object Earth {
 
   val R = 1
 
-  val organisationBus = new EventBus[List[Organisation]]
+  val organisationBus = new EventBus[Organisation]
 
   def apply(owner: Owner, div: ReactiveHtmlElement[HTMLDivElement]) =
     val scene  = new Scene();
@@ -102,12 +102,10 @@ object Earth {
       "/public/res/pinner.glb",
       (obj) => {
 
-        organisationBus.events.foreach { organisations =>
-          organisations.foreach { organisation =>
-            organisation.location.foreach { location =>
-              addObj(obj, location.lat, location.lon)
-              println(s"Adding ${organisation.name} at ${location.lat}, ${location.lon}")
-            }
+        organisationBus.events.foreach { organisation =>
+          organisation.location.foreach { location =>
+            addObj(obj, location.lat, location.lon)
+            println(s"Adding ${organisation.name} at ${location.lat}, ${location.lon}")
           }
         }(owner)
 
