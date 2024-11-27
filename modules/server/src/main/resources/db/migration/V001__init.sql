@@ -1,36 +1,28 @@
---
--- An enum type for the pet type for demonstration purposes.
--- Enumeration values are case sensitive.
---
-CREATE TYPE Pet AS ENUM(
-    'Cat',
-    'Dog'
-);
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Needed to create a cast to be able to use the Pet type in the users table.
-CREATE CAST (varchar AS Pet) WITH INOUT AS ASSIGNMENT;
-
-CREATE TABLE IF NOT EXISTS "users"(
-    id bigserial PRIMARY KEY,
-    name text NOT NULL,
+CREATE TABLE "users"(
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    firstname text NOT NULL,
+    lastname text NOT NULL,
     email text NOT NULL UNIQUE,
     hashed_password text NOT NULL,
-    age integer NOT NULL,
-    pet_type Pet,
-    pet_id integer,
-    creation_date timestamp NOT NULL
+    creation_date timestamp NOT NULL DEFAULT now(),
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS "cats"(
-    id bigserial PRIMARY KEY,
-    name text NOT NULL,
-    creation_date timestamp NOT NULL
+CREATE TABLE meshes(
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    blob bytea,
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS "dogs"(
-    id bigserial PRIMARY KEY,
+CREATE TABLE organisations(
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
     name text NOT NULL,
-    age integer NOT NULL,
-    creation_date timestamp NOT NULL
+    mesh_id uuid REFERENCES meshes(id),
+    lat float,
+    long float,
+    creation_date timestamp NOT NULL DEFAULT now(),
+    PRIMARY KEY (id)
 );
 

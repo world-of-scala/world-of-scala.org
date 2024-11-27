@@ -103,7 +103,9 @@ object DeploymentSettings {
       Seq(
         Compile / npmDependencies ++= Seq(
           "chart.js"        -> "2.9.4",
-          "@types/chart.js" -> "2.9.41"
+          "@types/chart.js" -> "2.9.41",
+          "three"           -> "0.170.0",
+          "@types/three"    -> "0.170.0"
         ),
         webpack / version      := "5.96.1",
         scalaJSStage in Global := FullOptStage,
@@ -171,7 +173,6 @@ object DeploymentSettings {
     if (!versionFile.exists()) {
       IO.write(versionFile, s"""ThisBuild / version := "0.0.1"""")
     }
-
 
   }
 

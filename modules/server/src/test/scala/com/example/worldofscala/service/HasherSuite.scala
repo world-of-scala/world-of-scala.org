@@ -1,6 +1,7 @@
 package com.example.worldofscala.service
 
 import munit.*
+import org.worldofscala.auth.Hasher
 
 class HasherSuite extends FunSuite {
 
