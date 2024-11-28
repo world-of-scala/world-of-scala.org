@@ -177,5 +177,6 @@ Global / onLoad := {
   // Or copy the files to the target directory of the server at build time.
   symlink(server.base / "src" / "main" / "public" / "img", client.base / "img")
   symlink(server.base / "src" / "main" / "public" / "css", client.base / "css")
+  symlink(server.base / "src" / "main" / "public" / "res", client.base / "res")
   (Global / onLoad).value
 }
