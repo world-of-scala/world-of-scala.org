@@ -6,4 +6,4 @@ import be.doeraene.webcomponents.ui5.configkeys.BarDesign
 
 object Footer:
   def apply(): HtmlElement =
-    div(styleAttr := "clear:both", Bar(_.design := BarDesign.Footer, "By laminar, zio, tapir, and ui5"))
+    div(styleAttr := "clear:both", Bar(_.design := BarDesign.Footer, "By scala.io"))
