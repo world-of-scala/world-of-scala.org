@@ -182,7 +182,7 @@ object DeploymentSettings {
     import sbt.Keys._
     Seq(
       Docker / maintainer     := "Joh doe",
-      Docker / dockerUsername := Some("johndoe"),
+      Docker / dockerUsername := Some("world-of-scala"),
       Docker / packageName    := "world-of-scala",
       dockerBaseImage         := "azul/zulu-openjdk-alpine:23-latest",
       dockerRepository        := Some("registry.orb.local"),
