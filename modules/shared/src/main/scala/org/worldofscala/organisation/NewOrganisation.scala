@@ -21,7 +21,8 @@ case class NewOrganisation(
   def errorMessages: Seq[String] = Seq.empty
 
 @NoPanel
-case class LatLon(lat: Double, lon: Double) derives JsonCodec, Schema, Debug
+case class LatLon(lat: Double, lon: Double) derives JsonCodec, Schema, Debug:
+  override def toString(): String = s"$lat,$lon"
 
 case class Organisation(
   id: UUID,

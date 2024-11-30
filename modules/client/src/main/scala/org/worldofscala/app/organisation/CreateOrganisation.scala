@@ -12,6 +12,25 @@ import org.worldofscala.app.given
 
 object CreateOrganisation:
 
+  given Form[LatLon] = stringFormWithValidation(using
+    new Validator[LatLon] {
+      override def validate(value: String): Either[String, LatLon] =
+        value.split(",") match {
+          case Array(lat, lon) =>
+            (
+              lat.toDoubleOption.toRight("Invalid latitude"),
+              lon.toDoubleOption.toRight("Invalid longitude")
+            ) match {
+              case (Right(lat), Right(lon)) => Right(LatLon(lat, lon))
+              case (Left(latError), Left(rightError)) =>
+                Left(s"$latError and $rightError")
+              case (Left(latError), _) => Left(latError)
+              case (_, Left(lonError)) => Left(lonError)
+            }
+          case _ => Left("Invalid format")
+        }
+    }
+  )
   given Defaultable[LatLon] with
     def default = LatLon(46.5188, 6.5593)
 
