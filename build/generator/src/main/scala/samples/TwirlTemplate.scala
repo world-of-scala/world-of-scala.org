@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 
 case class Config(
   title: String = "",
+  version: String = "",
   resourceManaged: File = new File("target/")
 )
 
@@ -20,6 +21,12 @@ def BuildIndex(args: String*): Unit = {
       .action((title, config) =>
         config
           .copy(title = title)
+      )
+      .required()
+    opt[String]("version")
+      .action((version, config) =>
+        config
+          .copy(version = version)
       )
       .required()
     opt[File]("resource-managed")
@@ -40,7 +47,7 @@ def BuildIndex(args: String*): Unit = {
       logger.info(s"Writing $indexFile")
       os.write.over(
         indexFile,
-        html.index.apply(config.title).body
+        html.index.apply(config.title, config.version).body
       )
 
   }

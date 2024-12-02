@@ -1,4 +1,4 @@
-@(title: String)
+@(title: String, version: String)
 <!DOCTYPE html>
 <html lang="us">
 
@@ -11,7 +11,7 @@
 <body>
     <!-- Include Scala.js compiled code -->
     <div id="app"></div>
-    <script type="text/javascript" src="/public/client-opt-bundle.js"></script>
+    <script type="text/javascript" src="/public/client-opt-bundle.js?version=@version"></script>
 </body>
 
 

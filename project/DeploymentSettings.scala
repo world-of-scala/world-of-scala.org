@@ -79,6 +79,8 @@ object DeploymentSettings {
                 "samples.BuildIndex",
                 "--title",
                 s""""${name.value} v ${version.value}"""",
+                "--version",
+                version.value,
                 "--resource-managed",
                 rootFolder
               ).mkString(" ", " ", "")
