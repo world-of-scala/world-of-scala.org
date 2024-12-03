@@ -2,20 +2,11 @@ package org.worldofscala.app
 
 import com.raquo.laminar.api.L.*
 
-import dev.cheleb.ziotapir.laminar.*
-
 import frontroute.*
 
 import org.scalajs.dom
 
 import org.worldofscala.*
-import org.worldofscala.organisation.OrganisationEndpoint
-import com.raquo.laminar.nodes.ReactiveHtmlElement
-import org.scalajs.dom.HTMLDivElement
-
-import org.worldofscala.organisation.Organisation
-
-import zio.ZIO
 
 object Router:
   val uiBase                     = "public"
@@ -33,21 +24,7 @@ object Router:
           pathPrefix(uiBase) {
             firstMatch(
               (pathEnd | path("index.html")) {
-                val earthVar = Var(Option.empty[ReactiveHtmlElement[HTMLDivElement]])
-                div(
-                  onMountCallback { ctx =>
-                    OrganisationEndpoint
-                      .allStream(())
-                      .jsonl[Organisation, Unit](organisation =>
-                        ZIO.attempt(world.Earth.organisationBus.emit(organisation))
-                      )
-
-                    earthVar.set(Some(world.Earth(ctx.owner, div())))
-
-                  },
-                  child.maybe <-- earthVar.signal
-                )
-
+                world.Earth()
               },
               path("signup") {
                 signup.SignupPage()

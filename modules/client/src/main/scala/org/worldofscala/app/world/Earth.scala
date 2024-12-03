@@ -1,33 +1,35 @@
 package org.worldofscala.app.world
 
 import org.scalajs.dom.window
-//import org.scalajs.dom.document
 
-//import typings.three.mod.*
+import com.raquo.laminar.api.L.*
+
 import typings.webxr.*
 import typings.three.mod.*
+import dev.cheleb.ziotapir.laminar.*
 
-import com.raquo.laminar.nodes.ReactiveHtmlElement
-import org.scalajs.dom.HTMLDivElement
 import typings.three.srcMaterialsMeshBasicMaterialMod.MeshBasicMaterialParameters
 import typings.three.srcMaterialsPointsMaterialMod.PointsMaterialParameters
 import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
 import typings.three.examplesJsmAddonsMod.OrbitControls
 import typings.three.examplesJsmAddonsMod.GLTFLoader
+
 import scala.scalajs.js.Math.{PI, cos, sin}
 import typings.three.srcMaterialsLineBasicMaterialMod.LineBasicMaterialParameters
 import typings.three.examplesJsmLoadersGltfloaderMod.GLTF
-import com.raquo.airstream.eventbus.EventBus
+
 import org.worldofscala.organisation.Organisation
-import com.raquo.airstream.ownership.Owner
+import org.worldofscala.organisation.OrganisationEndpoint
+import zio.ZIO
 
 object Earth {
 
   val R = 1
 
-  val organisationBus = new EventBus[Organisation]
+  def apply() =
 
-  def apply(owner: Owner, div: ReactiveHtmlElement[HTMLDivElement]) =
+    val eartthDiv = div()
+
     val scene  = new Scene();
     val camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -38,6 +40,7 @@ object Earth {
         .setAntialias(true)
         .setAlpha(false)
     );
+
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth * 0.88, window.innerHeight * .88);
 
@@ -81,41 +84,37 @@ object Earth {
       pinner.position.set(x, y, z)
       pinner.lookAt(0, 0, 0)
       globeGroup.add(pinner)
-
-    def addObj2(obj: GLTF, lat: Double, lon: Double) =
-      val pinner    = obj.scene.clone(true)
-      val (x, y, z) = coord(lat, lon)
-      pinner.position.set(x, y, z)
-      pinner.lookAt(0, 0, 0)
-      globeGroup.add(pinner)
+      globeGroup.add(drawLine(x * 1.2, y * 1.2, z * 1.2))
 
     val loader = new GLTFLoader()
 
     loader.load(
       "/public/res/scala.glb",
       (obj) => {
-        addObj2(obj, 46.5188, 6.5593) // Lauzane
+        addObj(obj, 46.5188, 6.5593) // Lauzane
       }
     )
 
-    loader.load(
-      "/public/res/pinner.glb",
-      (obj) => {
+    eartthDiv.amend(
+      onMountCallback { _ =>
+        loader.load(
+          "/public/res/pinner.glb",
+          (obj) => {
 
-        organisationBus.events.foreach { organisation =>
-          organisation.location.foreach { location =>
-            addObj(obj, location.lat, location.lon)
-            println(s"Adding ${organisation.name} at ${location.lat}, ${location.lon}")
+            OrganisationEndpoint
+              .allStream(())
+              .jsonl[Organisation, Unit] { organisation =>
+                ZIO
+                  .foreachDiscard(organisation.location) { location =>
+                    ZIO.debug(s"Addings ${organisation.name} at ${location.lat}, ${location.lon}") *>
+                      ZIO.attempt(addObj(obj, location.lat, location.lon))
+                  }
+              }
+
           }
-        }(owner)
-
-        // addObj(obj, 43.604997973579614, 3.8660556077984163) // Montpellier
-        // addObj(obj, 37.7471355990712, -122.38776282253441)  // SF
-        addObj(obj, 0, 0)
+        )
       }
     )
-
-    globeGroup.add(drawLine())
 
     scene.add(
       globeGroup
@@ -141,20 +140,18 @@ object Earth {
     light.lookAt(0, 0, 0)
     scene.add(light)
 
-    div.ref.append(renderer.domElement)
+    eartthDiv.ref.append(renderer.domElement)
 
-    div
+    eartthDiv
 
-  def drawLine(): typings.three.srcCoreObject3DMod.Object3D[typings.three.srcCoreObject3DMod.Object3DEventMap] = {
+  def drawLine(
+    x: Double,
+    y: Double,
+    z: Double
+  ) = {
     val material = new LineBasicMaterial(LineBasicMaterialParameters().setColor(0x0000ff))
-    val points
-      : scala.scalajs.js.Array[typings.three.srcMathVector2Mod.Vector2 | typings.three.srcMathVector3Mod.Vector3] =
-      scala.scalajs.js.Array[typings.three.srcMathVector2Mod.Vector2 | typings.three.srcMathVector3Mod.Vector3](
-        new typings.three.srcMathVector3Mod.Vector3(0, 0, 0),
-        new typings.three.srcMathVector3Mod.Vector3(10, 10, 10)
-      )
     val geometry = new BufferGeometry().setFromPoints(
-      points
+      points((0, 0, 0), (x, y, z))
     );
     val line: Line[BufferGeometry[Nothing], LineBasicMaterial, Nothing] = new Line(geometry, material);
     line
