@@ -46,7 +46,7 @@ object HttpServer extends ZIOAppDefault {
       (apiEndpoints, streamEndpoints) <- HttpApi.endpointsZIO
       // streamingEndpoints <- HttpApi.streamingEndpointsZIO
       docEndpoints = SwaggerInterpreter()
-                       .fromServerEndpoints(apiEndpoints ::: streamEndpoints, "zio-laminar-demo", "1.0.0")
+                       .fromServerEndpoints(apiEndpoints ::: streamEndpoints, "World of scala", "1.0.0")
       _ <- Server.serve(
              Routes(
                Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
