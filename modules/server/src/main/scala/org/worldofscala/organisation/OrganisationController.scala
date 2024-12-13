@@ -20,8 +20,9 @@ import sttp.capabilities.zio.ZioStreams
 class OrganisationController private (organisationService: OrganisationService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
 
-  val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create.securedServerLogic { userId => organisation =>
-    organisationService.create(organisation)
+  val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create.zServerAuthenticatedLogic {
+    userId => organisation =>
+      organisationService.create(organisation)
   }
 
   val listAll: ServerEndpoint[Any, Task] = OrganisationEndpoint.all.zServerLogic { _ =>
@@ -32,8 +33,10 @@ class OrganisationController private (organisationService: OrganisationService, 
     organisationService.streamAll()
   }
 
-  val routes: (List[ServerEndpoint[Any, Task]], List[ZServerEndpoint[Any, ZioStreams]]) =
-    (List(create, listAll), List(streamAll))
+  override val routes: List[ServerEndpoint[Any, Task]] =
+    List(create, listAll)
+
+  override def streamRoutes: List[ServerEndpoint[ZioStreams, Task]] = List(streamAll)
 
 }
 

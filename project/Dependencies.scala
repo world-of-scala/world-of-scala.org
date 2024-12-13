@@ -9,7 +9,7 @@ object Dependencies {
     val frontroute            = "0.19.0"
     val iron                  = "2.6.0"
     val javaMail              = "1.6.2"
-    val laminarFormDerivation = "0.18.0"
+    val laminarFormDerivation = "0.20.0"
     val mUnit                 = "1.0.2"
     val osLib                 = "0.10.2"
     val postgresql            = "42.7.4"
@@ -21,7 +21,7 @@ object Dependencies {
     val tapir                 = "1.11.9"
     val zio                   = "2.1.11"
     val zioConfig             = "4.0.2"
-    val zioLaminarTapir       = "0.6.0"
+    val zioLaminarTapir       = "0.8.0"
     val zioLogging            = "2.2.4"
     val zioPrelude            = "1.0.0-RC34"
   }

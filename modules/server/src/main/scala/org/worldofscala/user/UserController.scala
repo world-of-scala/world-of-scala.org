@@ -26,16 +26,16 @@ class UserController private (personService: UserService, jwtService: JWTService
     } yield token
   }
 
-  val profile: ServerEndpoint[Any, Task] = UserEndpoint.profile.securedServerLogic { userId => _ =>
+  val profile: ServerEndpoint[Any, Task] = UserEndpoint.profile.zServerAuthenticatedLogic { userId => _ =>
     personService.getProfile(userId)
   }
 
-  val routes: (List[ServerEndpoint[Any, Task]], List[ZServerEndpoint[Any, ZioStreams]]) =
-    (List(create, login, profile), List.empty)
+  override val routes: List[ServerEndpoint[Any, Task]] =
+    List(create, login, profile)
 }
 
 object UserController {
-  def makeZIO: URIO[UserService & JWTService, UserController] =
+  val makeZIO: URIO[UserService & JWTService, UserController] =
     for
       jwtService    <- ZIO.service[JWTService]
       personService <- ZIO.service[UserService]

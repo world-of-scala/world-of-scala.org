@@ -12,29 +12,28 @@ import org.worldofscala.user.*
 import org.worldofscala.organisation.*
 
 import user.*
+import dev.cheleb.ziotapir.*
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html
-object HttpApi {
-  private def gatherRoutes(
-    controllers: List[BaseController]
-  ): (List[ServerEndpoint[Any, Task]], List[ZServerEndpoint[Any, ZioStreams]]) =
-    controllers.foldLeft((List.empty[ServerEndpoint[Any, Task]], List.empty[ZServerEndpoint[Any, ZioStreams]])) {
-      case ((acc1, acc2), controller) =>
-        val (routes1, routes2) = controller.routes
-        (acc1 ++ routes1, acc2 ++ routes2)
-    }
+object HttpApi extends Routes {
 
-  private def makeControllers = for {
-    healthController       <- HealthController.makeZIO
-    personController       <- UserController.makeZIO
-    organisationController <- OrganisationController.makeZIO
-  } yield List(healthController, personController, organisationController)
+  private val makeControllers =
+    for {
+      healthController       <- HealthController.makeZIO
+      personController       <- UserController.makeZIO
+      organisationController <- OrganisationController.makeZIO
+    } yield List(healthController, personController, organisationController)
 
-  val endpointsZIO: URIO[
-    UserService & OrganisationService & JWTService,
-    (List[ServerEndpoint[Any, Task]], List[ZServerEndpoint[Any, ZioStreams]])
-  ] =
-    makeControllers.map(gatherRoutes)
+  def endpointsZIO: URIO[UserService & JWTService & OrganisationService, List[ServerEndpoint[Any, Task]]] =
+    makeControllers.map(gatherRoutes(_.routes))
+
+  def streamEndpointsZIO: URIO[UserService & JWTService & OrganisationService, List[ServerEndpoint[ZioStreams, Task]]] =
+    makeControllers.map(gatherRoutes(_.streamRoutes))
+
+  def endpoints = for {
+    endpoints       <- endpointsZIO
+    streamEndpoints <- streamEndpointsZIO
+  } yield endpoints ++ streamEndpoints
 
 //  val streamingEndpointsZIO =
 }

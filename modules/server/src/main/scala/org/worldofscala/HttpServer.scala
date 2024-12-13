@@ -16,6 +16,8 @@ import org.worldofscala.user.UserRepositoryLive
 import org.worldofscala.user.UserServiceLive
 import org.worldofscala.auth.JWTServiceLive
 import org.worldofscala.organisation.*
+import org.worldofscala.auth.JWTService
+import org.worldofscala.user.UserService
 
 object HttpServer extends ZIOAppDefault {
 
@@ -42,21 +44,21 @@ object HttpServer extends ZIOAppDefault {
 
   private val server =
     for {
-      _                               <- Console.printLine("Starting server...")
-      (apiEndpoints, streamEndpoints) <- HttpApi.endpointsZIO
+      _            <- Console.printLine("Starting server...")
+      apiEndpoints <- HttpApi.endpoints
       // streamingEndpoints <- HttpApi.streamingEndpointsZIO
       docEndpoints = SwaggerInterpreter()
-                       .fromServerEndpoints(apiEndpoints ::: streamEndpoints, "World of scala", "1.0.0")
+                       .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
       _ <- Server.serve(
              Routes(
                Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
              ) ++
                ZioHttpInterpreter(serverOptions)
-                 .toHttp(metricsEndpoint :: webJarRoutes :: apiEndpoints ::: streamEndpoints ::: docEndpoints)
+                 .toHttp(metricsEndpoint :: webJarRoutes :: apiEndpoints ::: docEndpoints)
            )
     } yield ()
 
-  private val program =
+  private val program: RIO[FlywayService & UserService & (OrganisationService & JWTService & Server), Unit] =
     for {
       _ <- runMigrations
       _ <- server
