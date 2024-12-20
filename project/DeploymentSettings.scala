@@ -70,7 +70,7 @@ object DeploymentSettings {
     case _        => Seq()
   }
 
-  def staticGenerationSettings(generator: Project) = mode match {
+  def staticGenerationSettings(generator: Project, client: Project) = mode match {
     case "prod" =>
       Seq(
         Assets / resourceGenerators += Def
@@ -94,22 +94,40 @@ object DeploymentSettings {
       )
     case "module" =>
       Seq(
+        // (Compile / resourceGenerators) += Def
+        //   .taskDyn[Seq[File]] {
+        //     val rootFolder = (Compile / resourceManaged).value / "public"
+        //     rootFolder.mkdirs()
+        //     (generator / Compile / runMain).toTask {
+        //       Seq(
+        //         "samples.BuildIndex",
+        //         "--title",
+        //         s""""${name.value} v2 ${version.value}"""",
+        //         "--version",
+        //         version.value,
+        //         "--resource-managed",
+        //         rootFolder
+        //       ).mkString(" ", " ", "")
+        //     }
+        //       .map(_ => (rootFolder ** "*.html").get)
+        //   }
+        //   .taskValue,
         (Compile / resourceGenerators) += Def
           .taskDyn[Seq[File]] {
             val rootFolder = (Compile / resourceManaged).value / "public"
             rootFolder.mkdirs()
-            (generator / Compile / runMain).toTask {
-              Seq(
-                "samples.BuildIndex",
-                "--title",
-                s""""${name.value} v2 ${version.value}"""",
-                "--version",
-                version.value,
-                "--resource-managed",
-                rootFolder
-              ).mkString(" ", " ", "")
+
+            Def.task {
+              scala.sys.process
+                .Process(
+                  List("npm", "run", "build"),
+                  (client / baseDirectory).value
+                )
+                .!
+              (rootFolder ** "*.*").get
+
             }
-              .map(_ => (rootFolder ** "*.html").get)
+
           }
           .taskValue
       )
@@ -159,11 +177,13 @@ object DeploymentSettings {
     case _      => ScalaJSPlugin
   }
 
-  def symlink(link: File, target: File): Unit =
+  def symlink(link: File, target: File): Unit = {
+    if (!(Files.exists(link.getParentFile.toPath)))
+      Files.createDirectories(link.getParentFile.toPath)
     if (!(Files.exists(link.toPath) || Files.isSymbolicLink(link.toPath)))
       if (Files.exists(target.toPath))
         Files.createSymbolicLink(link.toPath, link.toPath.getParent.relativize(target.toPath))
-
+  }
   def insureBuildEnvFile(baseDirectory: File, scalaVersion: String) = {
 
     val outputFile = baseDirectory / "scripts" / "target" / "build-env.sh"

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --outDir '/Users/olivier.nouguier/projects/cheleb/world-of-scala.org/modules/server/target/scala-3.6.2/resource_managed/main/public'",
     "preview": "vite preview",
     "sourcemap-report": "node sourcemap-report.js"
   },
