@@ -15,6 +15,7 @@ name := "World Of Scala"
 
 inThisBuild(
   List(
+    version      := "0.0.2",
     scalaVersion := scala3,
     scalacOptions ++= Seq(
       "-deprecation",
@@ -62,7 +63,7 @@ lazy val server = project
   .in(file("modules/server"))
   .enablePlugins(serverPlugins: _*)
   .settings(
-    staticGenerationSettings(generator)
+    staticGenerationSettings(generator, client)
   )
   .settings(
     fork := true,
@@ -95,13 +96,19 @@ lazy val client = scalajsProject("client")
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= { config =>
       mode match {
-        case "prod" =>
+        case "CommonJs" =>
           config
             .withModuleKind(scalaJSModule)
             .withMinify(true)
             .withOptimizer(true)
             .withClosureCompiler(true)
 
+        case "ESModule" =>
+          config
+            .withModuleKind(scalaJSModule)
+            .withMinify(true)
+            .withOptimizer(true)
+            .withClosureCompiler(true)
         case _ =>
           config
             .withModuleKind(scalaJSModule)
@@ -131,11 +138,11 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
   .settings(
     sharedJvmAndJsLibraryDependencies
   )
-  .jsSettings(
-    libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-time" % "2.6.0" // implementations of java.time classes for Scala.JS,
-    )
-  )
+  // .jsSettings(
+  //   libraryDependencies ++= Seq(
+  //     "io.github.cquiroz" %%% "scala-java-time" % "2.6.0" // implementations of java.time classes for Scala.JS,
+  //   )
+  // )
   .settings(
     publish / skip := true
   )
@@ -178,5 +185,9 @@ Global / onLoad := {
   symlink(server.base / "src" / "main" / "public" / "img", client.base / "img")
   symlink(server.base / "src" / "main" / "public" / "css", client.base / "css")
   symlink(server.base / "src" / "main" / "public" / "res", client.base / "res")
+
+  symlink(server.base / "src" / "main" / "resources" / "public" / "img", client.base / "img")
+  symlink(server.base / "src" / "main" / "resources" / "public" / "css", client.base / "css")
+  symlink(server.base / "src" / "main" / "resources" / "public" / "res", client.base / "res")
   (Global / onLoad).value
 }

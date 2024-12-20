@@ -125,7 +125,7 @@ object Earth {
 
     val animate: XRFrameRequestCallback = (_, _) => {
 
-      // globeGroup.rotation.x += 0.001;
+      globeGroup.rotation.x += 0.001;
       // globeGroup.rotation.y += 0.002;
 
       renderer.render(scene, camera);
