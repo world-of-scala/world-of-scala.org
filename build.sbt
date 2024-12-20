@@ -15,6 +15,7 @@ name := "World Of Scala"
 
 inThisBuild(
   List(
+    version      := "0.0.2",
     scalaVersion := scala3,
     scalacOptions ++= Seq(
       "-deprecation",
@@ -102,6 +103,12 @@ lazy val client = scalajsProject("client")
             .withOptimizer(true)
             .withClosureCompiler(true)
 
+        case "module" =>
+          config
+            .withModuleKind(scalaJSModule)
+            .withMinify(true)
+            .withOptimizer(true)
+            .withClosureCompiler(true)
         case _ =>
           config
             .withModuleKind(scalaJSModule)
@@ -131,11 +138,11 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
   .settings(
     sharedJvmAndJsLibraryDependencies
   )
-  .jsSettings(
-    libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-time" % "2.6.0" // implementations of java.time classes for Scala.JS,
-    )
-  )
+  // .jsSettings(
+  //   libraryDependencies ++= Seq(
+  //     "io.github.cquiroz" %%% "scala-java-time" % "2.6.0" // implementations of java.time classes for Scala.JS,
+  //   )
+  // )
   .settings(
     publish / skip := true
   )

@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sourcemap-report": "node sourcemap-report.js"
   },
   "license": "MIT",
   "dependencies": {
@@ -18,7 +19,11 @@
     "three": "^0.170.0"
   },
   "devDependencies": {
+    "@raquo/vite-plugin-glob-resolver": "^0.1.0",
+    "@raquo/vite-plugin-import-side-effect": "^0.2.0",
     "@scala-js/vite-plugin-scalajs": "^1.0.0",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-sourcemaps": "^0.6.3",
     "vite": "^6.0.3",
     "typescript": "5.7.2"
   }

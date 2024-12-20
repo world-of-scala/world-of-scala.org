@@ -47,6 +47,8 @@ object DeploymentSettings {
   val serverPlugins = mode match {
     case "prod" =>
       Seq(SbtWeb, SbtTwirl, JavaAppPackaging, WebScalaJSBundlerPlugin, DockerPlugin, AshScriptPlugin)
+    case "module" =>
+      Seq(SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
     case _ => Seq()
   }
 
@@ -64,11 +66,12 @@ object DeploymentSettings {
         scalaJSProjects         := clientProjects,
         Assets / pipelineStages := Seq(scalaJSPipeline)
       ) ++ dockerSettings
-    case _ => Seq()
+    case "module" => dockerSettings
+    case _        => Seq()
   }
 
-  def staticGenerationSettings(generator: Project) =
-    if (mode == "prod")
+  def staticGenerationSettings(generator: Project) = mode match {
+    case "prod" =>
       Seq(
         Assets / resourceGenerators += Def
           .taskDyn[Seq[File]] {
@@ -78,7 +81,7 @@ object DeploymentSettings {
               Seq(
                 "samples.BuildIndex",
                 "--title",
-                s""""${name.value} v ${version.value}"""",
+                s""""${name.value} v2 ${version.value}"""",
                 "--version",
                 version.value,
                 "--resource-managed",
@@ -89,9 +92,30 @@ object DeploymentSettings {
           }
           .taskValue
       )
-    else
+    case "module" =>
+      Seq(
+        (Compile / resourceGenerators) += Def
+          .taskDyn[Seq[File]] {
+            val rootFolder = (Compile / resourceManaged).value / "public"
+            rootFolder.mkdirs()
+            (generator / Compile / runMain).toTask {
+              Seq(
+                "samples.BuildIndex",
+                "--title",
+                s""""${name.value} v2 ${version.value}"""",
+                "--version",
+                version.value,
+                "--resource-managed",
+                rootFolder
+              ).mkString(" ", " ", "")
+            }
+              .map(_ => (rootFolder ** "*.html").get)
+          }
+          .taskValue
+      )
+    case _ =>
       Seq()
-
+  }
   //
   // ScalablyTyped settings
   //
