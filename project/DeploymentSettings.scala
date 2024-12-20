@@ -94,24 +94,6 @@ object DeploymentSettings {
       )
     case "module" =>
       Seq(
-        // (Compile / resourceGenerators) += Def
-        //   .taskDyn[Seq[File]] {
-        //     val rootFolder = (Compile / resourceManaged).value / "public"
-        //     rootFolder.mkdirs()
-        //     (generator / Compile / runMain).toTask {
-        //       Seq(
-        //         "samples.BuildIndex",
-        //         "--title",
-        //         s""""${name.value} v2 ${version.value}"""",
-        //         "--version",
-        //         version.value,
-        //         "--resource-managed",
-        //         rootFolder
-        //       ).mkString(" ", " ", "")
-        //     }
-        //       .map(_ => (rootFolder ** "*.html").get)
-        //   }
-        //   .taskValue,
         (Compile / resourceGenerators) += Def
           .taskDyn[Seq[File]] {
             val rootFolder = (Compile / resourceManaged).value / "public"
