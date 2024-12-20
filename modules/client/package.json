@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --outDir '/Users/olivier.nouguier/projects/cheleb/world-of-scala.org/modules/server/target/scala-3.6.2/resource_managed/main/public'",
+    "build": "vite build",
     "preview": "vite preview",
     "sourcemap-report": "node sourcemap-report.js"
   },
@@ -16,7 +16,7 @@
     "@ui5/webcomponents-fiori": "2.1.0",
     "@ui5/webcomponents-icons": "2.1.0",
     "chart.js": "2.9.4",
-    "three": "^0.170.0"
+    "three": "^0.171.0"
   },
   "devDependencies": {
     "@raquo/vite-plugin-glob-resolver": "^0.1.0",

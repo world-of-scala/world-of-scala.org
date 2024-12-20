@@ -4,11 +4,11 @@
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
-    "three": "^0.169.0",
+    "three": "^0.171.0",
     "chart.js": "2.9.4"
   },
   "devDependencies": {
-    "@types/three": "^0.170.0",
+    "@types/three": "^0.171.0",
     "@types/chart.js": "2.9.41",
     "typescript": "5.7.2"
   }

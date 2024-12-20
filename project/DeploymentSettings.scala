@@ -120,7 +120,7 @@ object DeploymentSettings {
             Def.task {
               scala.sys.process
                 .Process(
-                  List("npm", "run", "build"),
+                  List("npm", "run", "build", "--", "--emptyOutDir", "--outDir", rootFolder.getAbsolutePath),
                   (client / baseDirectory).value
                 )
                 .!
