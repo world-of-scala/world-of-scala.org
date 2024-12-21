@@ -96,14 +96,14 @@ lazy val client = scalajsProject("client")
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= { config =>
       mode match {
-        case "prod" =>
+        case "CommonJs" =>
           config
             .withModuleKind(scalaJSModule)
             .withMinify(true)
             .withOptimizer(true)
             .withClosureCompiler(true)
 
-        case "module" =>
+        case "ESModule" =>
           config
             .withModuleKind(scalaJSModule)
             .withMinify(true)

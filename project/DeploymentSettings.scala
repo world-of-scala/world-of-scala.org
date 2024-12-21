@@ -27,10 +27,10 @@ import webscalajs.WebScalaJS.autoImport._
 object DeploymentSettings {
 //
 // Define the build mode:
-// - prod: production mode, aka with BFF and webjar deployment
+// - CommonJs: production mode, aka with BFF and webjar deployment
 //         optimized, CommonJSModule
 //         webjar packaging
-// - demo: demo mode (default)
+// - ESModule: demo mode (default)
 //         optimized, CommonJSModule
 //         static files
 // - dev:  development mode
@@ -45,20 +45,20 @@ object DeploymentSettings {
 // On dev mode, server will only serve API and static files.
 //
   val serverPlugins = mode match {
-    case "prod" =>
+    case "CommonJs" =>
       Seq(SbtWeb, SbtTwirl, JavaAppPackaging, WebScalaJSBundlerPlugin, DockerPlugin, AshScriptPlugin)
-    case "module" =>
+    case "ESModule" =>
       Seq(SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
     case _ => Seq()
   }
 
   def scalaJSModule = mode match {
-    case "prod" => ModuleKind.CommonJSModule
-    case _      => ModuleKind.ESModule
+    case "CommonJs" => ModuleKind.CommonJSModule
+    case _          => ModuleKind.ESModule
   }
 
   def serverSettings(clientProjects: Project*) = mode match {
-    case "prod" =>
+    case "CommonJs" =>
       Seq(
         Compile / compile              := ((Compile / compile) dependsOn scalaJSPipeline).value,
         Assets / WebKeys.packagePrefix := "public/",
@@ -66,12 +66,12 @@ object DeploymentSettings {
         scalaJSProjects         := clientProjects,
         Assets / pipelineStages := Seq(scalaJSPipeline)
       ) ++ dockerSettings
-    case "module" => dockerSettings
-    case _        => Seq()
+    case "ESModule" => dockerSettings
+    case _          => Seq()
   }
 
   def staticGenerationSettings(generator: Project, client: Project) = mode match {
-    case "prod" =>
+    case "CommonJs" =>
       Seq(
         Assets / resourceGenerators += Def
           .taskDyn[Seq[File]] {
@@ -92,7 +92,7 @@ object DeploymentSettings {
           }
           .taskValue
       )
-    case "module" =>
+    case "ESModule" =>
       Seq(
         (Compile / resourceGenerators) += Def
           .taskDyn[Seq[File]] {
@@ -120,12 +120,12 @@ object DeploymentSettings {
   // ScalablyTyped settings
   //
   val scalablyTypedPlugin = mode match {
-    case "prod" => ScalablyTypedConverterPlugin
-    case _      => ScalablyTypedConverterExternalNpmPlugin
+    case "CommonJs" => ScalablyTypedConverterPlugin
+    case _          => ScalablyTypedConverterExternalNpmPlugin
   }
 
   val scalablytypedSettings = mode match {
-    case "prod" =>
+    case "CommonJs" =>
       Seq(
         Compile / npmDependencies ++= Seq(
           "chart.js"        -> "2.9.4",
@@ -139,7 +139,6 @@ object DeploymentSettings {
       )
     case _ =>
       Seq(externalNpm := {
-        // scala.sys.process.Process(List("npm", "install", "--silent", "--no-audit", "--no-fund"), baseDirectory.value).!
         baseDirectory.value / "scalablytyped"
       })
   }
@@ -155,8 +154,8 @@ object DeploymentSettings {
       .toSeq
 
   def scalaJSPlugin = mode match {
-    case "prod" => ScalaJSBundlerPlugin
-    case _      => ScalaJSPlugin
+    case "CommonJs" => ScalaJSBundlerPlugin
+    case _          => ScalaJSPlugin
   }
 
   def symlink(link: File, target: File): Unit = {
