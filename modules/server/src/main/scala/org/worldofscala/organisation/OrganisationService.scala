@@ -25,7 +25,7 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
           ZStream.fromIterable(
             (entity
               .into[Organisation]
-              .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, long))))
+//              .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, long))))
               .transform
               .toJson + "\n").getBytes
           )
@@ -38,31 +38,25 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
       entities.map(entity =>
         entity
           .into[Organisation]
-          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, long))))
+//          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, long))))
           .transform
       )
     )
 
   override def create(organisation: NewOrganisation): Task[Organisation] =
 
-    val organisationEntity = organisation.location match
-      case Some(location) =>
-        NewOrganisationEntity(
-          name = organisation.name,
-          lat = Some(location.lat),
-          long = Some(location.lon)
-        )
-      case None =>
-        NewOrganisationEntity(
-          name = organisation.name
-        )
+    val organisationEntity =
+      NewOrganisationEntity(
+        name = organisation.name,
+        location = organisation.location
+      )
 
     organisationRepository
       .create(organisationEntity)
       .map(entity =>
         entity
           .into[Organisation]
-          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, lat))))
+//          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, lat))))
           .transform
       )
 }

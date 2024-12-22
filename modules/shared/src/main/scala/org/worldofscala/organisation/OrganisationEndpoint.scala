@@ -27,7 +27,7 @@ object OrganisationEndpoint extends BaseEndpoint:
         .example(
           NewOrganisation(
             "EPFL",
-            Some(LatLon(46.519653, 6.632273))
+            LatLon(46.519653, 6.632273)
           )
         )
     )
