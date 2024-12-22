@@ -41,6 +41,8 @@ object DeploymentSettings {
 //   (see vite.config.js)
   val mode = sys.env.get("MOD").getOrElse("demo")
 
+  val publicFolder = "public"
+
 //
 // On dev mode, server will only serve API and static files.
 //
@@ -61,7 +63,7 @@ object DeploymentSettings {
     case "CommonJs" =>
       Seq(
         Compile / compile              := ((Compile / compile) dependsOn scalaJSPipeline).value,
-        Assets / WebKeys.packagePrefix := "public/",
+        Assets / WebKeys.packagePrefix := s"$publicFolder/",
         Runtime / managedClasspath += (Assets / packageBin).value,
         scalaJSProjects         := clientProjects,
         Assets / pipelineStages := Seq(scalaJSPipeline)
@@ -75,7 +77,7 @@ object DeploymentSettings {
       Seq(
         Assets / resourceGenerators += Def
           .taskDyn[Seq[File]] {
-            val rootFolder = (Assets / resourceManaged).value / "public"
+            val rootFolder = (Assets / resourceManaged).value / publicFolder
             rootFolder.mkdirs()
             (generator / Compile / runMain).toTask {
               Seq(
@@ -96,7 +98,7 @@ object DeploymentSettings {
       Seq(
         (Compile / resourceGenerators) += Def
           .taskDyn[Seq[File]] {
-            val rootFolder = (Compile / resourceManaged).value / "public"
+            val rootFolder = (Compile / resourceManaged).value / publicFolder
             rootFolder.mkdirs()
 
             Def.task {
