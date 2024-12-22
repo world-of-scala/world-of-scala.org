@@ -8,8 +8,8 @@ if [ ! -e $BUILD_ENV_FILE ]; then
     echo
 
     until [ -e $BUILD_ENV_FILE ]; do
-      echo -n "."
-      sleep 4
+        echo -n "."
+        sleep 4
     done
 
     echo
@@ -19,11 +19,9 @@ if [ ! -e $BUILD_ENV_FILE ]; then
 
 fi
 
-
 . $BUILD_ENV_FILE
 
 rm -f $MAIN_JS_FILE
-
 
 filename_lock=node_modules/.package-lock.json
 
