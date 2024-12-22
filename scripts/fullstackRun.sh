@@ -7,7 +7,7 @@
 # And setup the project
 if [ ! -e $BUILD_ENV_FILE ]; then
     sbt projects
-    . scripts/setup.sh
 fi
+. scripts/setup.sh
 
 MOD=$BUILD_MOD sbt -mem 4096 "${BUILD_CLEAN}server/run"
