@@ -20,6 +20,7 @@ import org.worldofscala.auth.JWTServiceLive
 import org.worldofscala.organisation.*
 import org.worldofscala.auth.JWTService
 import org.worldofscala.user.UserService
+import org.worldofscala.config.*
 
 object HttpServer extends ZIOAppDefault {
 
@@ -30,7 +31,7 @@ object HttpServer extends ZIOAppDefault {
     "public"
   )
 
-  val serverOptions: ZioHttpServerOptions[Any] =
+  private def serverOptions: ZioHttpServerOptions[Any] =
     ZioHttpServerOptions.customiseInterceptors
       .metricsInterceptor(metricsInterceptor)
       .appendInterceptor(
@@ -38,40 +39,40 @@ object HttpServer extends ZIOAppDefault {
       )
       .options
 
-  val runMigrations = for {
-    flyway <- ZIO.service[FlywayService]
-    _ <- flyway.runMigrations().catchSome { case e =>
-           ZIO.logError(s"Error running migrations: ${e.getMessage()}")
-             *> flyway.runRepair() *> flyway.runMigrations()
-         }
-  } yield ()
-
-  private val server =
+  private def server =
     for {
-      _            <- Console.printLine("Starting server...")
+
       apiEndpoints <- HttpApi.endpoints
       // streamingEndpoints <- HttpApi.streamingEndpointsZIO
       docEndpoints = SwaggerInterpreter()
                        .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
+
       _ <- Server.serve(
              Routes(
                Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
              ) ++
                ZioHttpInterpreter(serverOptions)
                  .toHttp(metricsEndpoint :: webJarRoutes :: apiEndpoints ::: docEndpoints)
-           )
+           ) <* Console.printLine("Server started !")
     } yield ()
 
-  private val program: RIO[FlywayService & UserService & (OrganisationService & JWTService & Server), Unit] =
+  private val program
+    : ZIO[FlywayService & ServerConfig & UserService & JWTService & OrganisationService, Throwable, Unit] =
     for {
-      _ <- runMigrations
-      _ <- server
+      _            <- FlywayService.runMigrations
+      serverConfig <- ZIO.service[ServerConfig]
+      _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
+
+      _ <- server.provideSomeLayer(serverLayer(serverConfig))
     } yield ()
+
+  private def serverLayer(serverConfig: ServerConfig): TaskLayer[Server] =
+    Server.defaultWithPort(serverConfig.port)
 
   override def run =
     program
       .provide(
-        Server.default,
+        ServerConfig.layer,
         // Service layers
         UserServiceLive.layer,
         OrganisationServiceLive.layer,

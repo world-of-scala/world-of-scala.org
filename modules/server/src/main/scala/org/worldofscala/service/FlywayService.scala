@@ -13,6 +13,15 @@ trait FlywayService {
   def runRepair(): Task[Unit]
 }
 
+object FlywayService:
+  def runMigrations: RIO[FlywayService, Unit] = for {
+    flyway <- ZIO.service[FlywayService]
+    _ <- flyway.runMigrations().catchSome { case e =>
+           ZIO.logError(s"Error running migrations: ${e.getMessage()}")
+             *> flyway.runRepair() *> flyway.runMigrations()
+         }
+  } yield ()
+
 class FlywayServiceLive private (flyway: Flyway) extends FlywayService {
   override def runClean(): Task[Unit]      = ZIO.attemptBlocking(flyway.clean())
   override def runBaseline(): Task[Unit]   = ZIO.attemptBlocking(flyway.baseline())
@@ -21,12 +30,18 @@ class FlywayServiceLive private (flyway: Flyway) extends FlywayService {
 }
 
 object FlywayServiceLive {
-  def live: ZLayer[FlywayConfig, Throwable, FlywayService] = ZLayer(
+  def live: RLayer[FlywayConfig, FlywayService] = ZLayer(
     for {
       config <- ZIO.service[FlywayConfig]
-      flyway <- ZIO.attempt(Flyway.configure().dataSource(config.url, config.user, config.password).load())
+      flyway <- ZIO.attempt(
+                  Flyway
+                    .configure()
+                    .loggers("slf4j")
+                    .dataSource(config.url, config.user, config.password)
+                    .load()
+                )
     } yield new FlywayServiceLive(flyway)
   )
 
-  val configuredLayer = Configs.makeConfigLayer[FlywayConfig]("db.dataSource") >>> live
+  val configuredLayer: TaskLayer[FlywayService] = Configs.makeConfigLayer[FlywayConfig]("db.dataSource") >>> live
 }
