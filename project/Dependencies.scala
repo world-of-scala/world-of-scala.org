@@ -36,7 +36,7 @@ object Dependencies {
   private val databaseDependencies = Seq(
     "org.flywaydb"   % "flyway-core"                % Versions.flywaydb,
     "org.flywaydb"   % "flyway-database-postgresql" % Versions.flywaydb,
-    "org.postgresql" % "postgresql"                 % Versions.postgresql % Runtime
+    "org.postgresql" % "postgresql"                 % Versions.postgresql
   )
 
   private val loggingDependencies = Seq(

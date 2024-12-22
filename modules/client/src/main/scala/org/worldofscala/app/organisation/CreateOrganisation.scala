@@ -36,7 +36,7 @@ object CreateOrganisation:
 
   def apply() =
     val organisationVar = Var(
-      NewOrganisation("", None)
+      NewOrganisation("", LatLon.empty)
     )
 
     div(

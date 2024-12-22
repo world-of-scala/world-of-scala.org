@@ -9,6 +9,7 @@ import io.scalaland.chimney.dsl.*
 import zio.*
 import zio.json.*
 import zio.stream.ZStream
+import org.worldofscala.repositories.PGpointSupport
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]
@@ -16,7 +17,9 @@ trait OrganisationRepository {
   def streamAll(): ZStream[Any, Throwable, OrganisationEntity]
 }
 
-class OrganisationRepositoryLive private (quill: Quill.Postgres[SnakeCase]) extends OrganisationRepository {
+class OrganisationRepositoryLive private (val quill: Quill.Postgres[SnakeCase])
+    extends OrganisationRepository
+    with PGpointSupport {
   import quill.*
 
   override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =

@@ -14,13 +14,14 @@ import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
 import typings.three.examplesJsmAddonsMod.OrbitControls
 import typings.three.examplesJsmAddonsMod.GLTFLoader
 
-import scala.scalajs.js.Math.{PI, cos, sin}
+import scala.scalajs.js.Math.PI
 import typings.three.srcMaterialsLineBasicMaterialMod.LineBasicMaterialParameters
 import typings.three.examplesJsmLoadersGltfloaderMod.GLTF
 
 import org.worldofscala.organisation.Organisation
 import org.worldofscala.organisation.OrganisationEndpoint
 import zio.ZIO
+import org.worldofscala.organisation.LatLon
 
 object Earth {
 
@@ -78,9 +79,9 @@ object Earth {
 
     globeGroup.add(points)
 
-    def addObj(obj: GLTF, lat: Double, lon: Double) =
+    def addObj(obj: GLTF, location: LatLon) =
       val pinner    = obj.scene.clone(true)
-      val (x, y, z) = coord(lat, lon)
+      val (x, y, z) = location.xyz(R + 0.02)
       pinner.position.set(x, y, z)
       pinner.lookAt(0, 0, 0)
       globeGroup.add(pinner)
@@ -91,7 +92,7 @@ object Earth {
     loader.load(
       "/public/res/scala.glb",
       (obj) => {
-        addObj(obj, 46.5188, 6.5593) // Lauzane
+        addObj(obj, LatLon(46.5188, 6.5593)) // Lauzane
       }
     )
 
@@ -105,12 +106,9 @@ object Earth {
               .allStream(())
               .jsonl[Organisation, Unit] { organisation =>
                 ZIO
-                  .foreachDiscard(organisation.location) { location =>
-                    ZIO.debug(s"Addings ${organisation.name} at ${location.lat}, ${location.lon}") *>
-                      ZIO.attempt(addObj(obj, location.lat, location.lon))
-                  }
+                ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}") *>
+                  ZIO.attempt(addObj(obj, organisation.location))
               }
-
           }
         )
       }
@@ -157,11 +155,4 @@ object Earth {
     line
   }
 
-  def coord(lat: Double, lon: Double) = {
-    val latRad = lat * PI / 180.0;
-    val lonRad = (-lon + 180) * PI / 180.0;
-    val d      = R + 0.02
-    (d * cos(latRad) * cos(lonRad), d * sin(latRad), d * cos(latRad) * sin(lonRad));
-
-  }
 }
