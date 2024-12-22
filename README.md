@@ -62,62 +62,37 @@ Development is done in two parts: the server and the client.
   * The client is built using the `fastLinkJS` command.
   * Vite is used to serve the client in development mode, with hot reloading.
 
-
-
 ### VS Code
 
-This project [is configured to work](.vscode/tasks.json) with Visual Studio Code.
+VS Code is the recommended IDE for this project. The project is configured to work with Visual Studio Code.
 
-* metals is needed for Scala support.
 * The Scala (Metals) extension is recommended.
 
-To open the project in VS Code, run the following command:
+Just open the project in VS Code:
 
 ```bash
 code .
 ```
 
-With a little luck, you will be prompted to install the recommended extensions, if not already installed.
+Details here [VS Code](./docs/vscode.md).
 
-The developpement environment should setup itself.
+### Manually
 
-* npm install
-* runDemo
-  * sbt ~client/fastLinkJS
-  * vite serve
-  * runServer with reStart on file change
+Details on how to setup the development environment manually can be found in the [manual](./docs/manual.md).
 
 
+## Production
 
-### Manualy
+To build the project for production, run the following command:
 
-If for any reaseon you want to setup the development environment manually, here are the steps:
-
-#### Install the npm dependencies:
-
+* With ESModule
 ```bash
-pushd modules/client
-npm install
-pushd pushd scalablytyped
-npm install
-popd
-popd
+./scripts/fullstackBuild.sh
 ```
 
-#### Start the development servers:
-
-* Backend Scala:  In a terminal, run the following command:
+* With CommonJS
 ```bash
-MOD=dev sbt server/run
-```
-* ScalaJS: In another terminal, run the following command:
-```bash
-MOD=dev sbt ~client/fastLinkJS
-```
-* Vite: In another terminal, run the following command:
-```bash
-cd modules/client
-npm run dev
+./scripts/fullstackBuild.sh -n
 ```
 
-
+Details here [Production](./docs/production.md).
