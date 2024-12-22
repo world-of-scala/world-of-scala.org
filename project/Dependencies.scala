@@ -10,6 +10,7 @@ object Dependencies {
     val iron                  = "2.6.0"
     val javaMail              = "1.6.2"
     val laminarFormDerivation = "0.20.0"
+    val logback               = "1.5.15"
     val mUnit                 = "1.0.2"
     val osLib                 = "0.10.2"
     val postgresql            = "42.7.4"
@@ -37,6 +38,13 @@ object Dependencies {
     "org.flywaydb"   % "flyway-database-postgresql" % Versions.flywaydb,
     "org.postgresql" % "postgresql"                 % Versions.postgresql % Runtime
   )
+
+  private val loggingDependencies = Seq(
+    "dev.zio"       %% "zio-logging"       % Versions.zioLogging,
+    "dev.zio"       %% "zio-logging-slf4j" % Versions.zioLogging,
+    "ch.qos.logback" % "logback-classic"   % Versions.logback
+  )
+
   private val quillDependencies = Seq(
     "io.getquill" %% "quill-jdbc-zio" % Versions.quill
   )
@@ -58,7 +66,8 @@ object Dependencies {
       configDependencies ++
       databaseDependencies ++
       quillDependencies ++
-      jwtDependencies
+      jwtDependencies ++
+      loggingDependencies
 
   val testingLibraryDependencies =
     libraryDependencies ++= Seq(

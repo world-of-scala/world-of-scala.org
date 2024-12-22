@@ -2,6 +2,8 @@ package org.worldofscala
 
 import zio.*
 import zio.http.*
+import zio.logging.LogFormat
+import zio.logging.backend.SLF4J
 
 import sttp.tapir.*
 import sttp.tapir.files.*
@@ -20,6 +22,8 @@ import org.worldofscala.auth.JWTService
 import org.worldofscala.user.UserService
 
 object HttpServer extends ZIOAppDefault {
+
+  override val bootstrap = SLF4J.slf4j(LogFormat.colored)
 
   private val webJarRoutes = staticResourcesGetServerEndpoint[Task]("public")(
     this.getClass.getClassLoader,
