@@ -4,7 +4,7 @@ This project intention is the study of the Scala programming language and its ec
 
 This is a full stack Scala project, using Scala.js for the client and ZIO for the server.
 
-
+![World Of Scala](./docs/images/worldofscala.png)
 
 ## Libraries && Tooling
 
