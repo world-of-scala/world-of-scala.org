@@ -11,6 +11,7 @@ import zio.prelude.magnolia.*
 import dev.cheleb.scalamigen.NoPanel
 import zio.prelude.Debug.Repr
 import Math.{PI, cos, sin}
+import sttp.tapir.CodecFormat.Json
 
 @NoPanel
 case class NewOrganisation(
@@ -49,6 +50,7 @@ object LatLon:
   val empty: LatLon = LatLon(0.0, 0.0)
 
 case class Organisation(
+  id: Organisation.Id,
   createdBy: UUID,
   name: String,
   location: LatLon
@@ -60,3 +62,14 @@ case class Organisation(
 object Organisation:
   given Debug[UUID] with
     def debug(value: UUID): Repr = Repr.String(value.toString)
+
+  opaque type Id = UUID
+
+  object Id:
+    def apply(uuid: UUID): Id         = uuid
+    def unapply(id: Id): Option[UUID] = Some(id)
+
+    extension (id: Id) def value: UUID = id
+
+    given JsonCodec[Id] = JsonCodec.uuid
+    given Schema[Id]    = Schema.string
