@@ -11,6 +11,8 @@ import zio.json.*
 import zio.stream.ZStream
 import org.worldofscala.repositories.PGpointSupport
 import java.util.UUID
+import org.worldofscala.user.User
+import org.worldofscala.user.UserRepository
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]
@@ -24,9 +26,11 @@ class OrganisationRepositoryLive private (val quill: Quill.Postgres[SnakeCase])
   import quill.*
 
   given MappedEncoding[Organisation.Id, UUID] =
-    MappedEncoding[Organisation.Id, UUID](_.value)
+    MappedEncoding[Organisation.Id, UUID](identity)
   given MappedEncoding[UUID, Organisation.Id] =
     MappedEncoding[UUID, Organisation.Id](Organisation.Id.apply)
+
+  import UserRepository.given
 
   override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =
     stream(query[OrganisationEntity])

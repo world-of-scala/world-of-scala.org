@@ -5,7 +5,7 @@ import io.scalaland.chimney.Transformer
 import java.util.UUID
 
 case class NewUserEntity(
-  id: Option[UUID],
+  id: Option[User.Id],
   firstname: String,
   lastname: String,
   email: String,
@@ -14,7 +14,7 @@ case class NewUserEntity(
 )
 
 case class UserEntity(
-  id: UUID,
+  id: User.Id,
   firstname: String,
   lastname: String,
   email: String,

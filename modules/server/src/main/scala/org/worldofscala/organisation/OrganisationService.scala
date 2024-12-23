@@ -8,9 +8,10 @@ import io.scalaland.chimney.dsl._
 import org.scalafmt.config.Indents.RelativeToLhs.`match`
 import zio.stream.ZStream
 import java.util.UUID
+import org.worldofscala.user.User
 
 trait OrganisationService {
-  def create(organisation: NewOrganisation, userUUID: UUID): Task[Organisation]
+  def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation]
   def listAll(): Task[List[Organisation]]
   def streamAll(): Task[ZStream[Any, Throwable, Byte]]
 
@@ -42,7 +43,7 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
       )
     )
 
-  override def create(organisation: NewOrganisation, userUUID: UUID): Task[Organisation] =
+  override def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation] =
 
     val organisationEntity =
       NewOrganisationEntity(

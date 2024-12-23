@@ -58,7 +58,7 @@ class JWTServiceLive private (jwtConfig: JWTConfig, clock: JavaClock) extends JW
     for {
       decoded <- ZIO.attempt(verifier.verify(token))
       userID <- ZIO.attempt(
-                  UserID(UUID.fromString(decoded.getSubject()), decoded.getClaim(CLAIN_USER_NAME).asString())
+                  UserID(User.Id(UUID.fromString(decoded.getSubject())), decoded.getClaim(CLAIN_USER_NAME).asString())
                 )
     } yield userID
 }
