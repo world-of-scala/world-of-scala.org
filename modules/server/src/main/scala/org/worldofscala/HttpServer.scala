@@ -38,35 +38,26 @@ object HttpServer extends ZIOAppDefault {
       )
       .options
 
-  private def server =
-    for {
+  private def server = for {
+    apiEndpoints <- HttpApi.endpoints
+    docEndpoints = SwaggerInterpreter()
+                     .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
+    _ <- Server.serve(
+           Routes(
+             Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
+           ) ++
+             ZioHttpInterpreter(serverOptions)
+               .toHttp(metricsEndpoint :: webJarRoutes :: apiEndpoints ::: docEndpoints)
+         ) <* Console.printLine("Server started !")
+  } yield ()
 
-      apiEndpoints <- HttpApi.endpoints
-      // streamingEndpoints <- HttpApi.streamingEndpointsZIO
-      docEndpoints = SwaggerInterpreter()
-                       .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
+  private val program = for {
+    _            <- FlywayService.runMigrations
+    serverConfig <- ZIO.service[ServerConfig]
+    _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
 
-      _ <- Server.serve(
-             Routes(
-               Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
-             ) ++
-               ZioHttpInterpreter(serverOptions)
-                 .toHttp(metricsEndpoint :: webJarRoutes :: apiEndpoints ::: docEndpoints)
-           ) <* Console.printLine("Server started !")
-    } yield ()
-
-  private val program
-    : ZIO[FlywayService & ServerConfig & UserService & JWTService & OrganisationService, Throwable, Unit] =
-    for {
-      _            <- FlywayService.runMigrations
-      serverConfig <- ZIO.service[ServerConfig]
-      _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
-
-      _ <- server.provideSomeLayer(serverLayer(serverConfig))
-    } yield ()
-
-  private def serverLayer(serverConfig: ServerConfig): TaskLayer[Server] =
-    Server.defaultWithPort(serverConfig.port)
+    _ <- server.provideSomeLayer(Server.defaultWithPort(serverConfig.port))
+  } yield ()
 
   override def run =
     program
