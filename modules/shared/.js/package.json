@@ -1,0 +1,11 @@
+{
+  "name": "shared-test",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "5.7.2"
+  }
+}
