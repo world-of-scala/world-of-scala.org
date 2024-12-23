@@ -106,9 +106,6 @@ lazy val client = scalajsProject("client")
         case "ESModule" =>
           config
             .withModuleKind(scalaJSModule)
-            .withMinify(true)
-            .withOptimizer(true)
-            .withClosureCompiler(true)
         case _ =>
           config
             .withModuleKind(scalaJSModule)
@@ -138,11 +135,6 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
   .settings(
     sharedJvmAndJsLibraryDependencies
   )
-  // .jsSettings(
-  //   libraryDependencies ++= Seq(
-  //     "io.github.cquiroz" %%% "scala-java-time" % "2.6.0" // implementations of java.time classes for Scala.JS,
-  //   )
-  // )
   .settings(
     publish / skip := true
   )
