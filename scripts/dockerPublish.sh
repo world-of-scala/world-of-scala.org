@@ -2,7 +2,6 @@
 set -e
 # Import the project environment variables
 . ./scripts/env.sh
-. ./scripts/getoptions.sh
 
 # This is a hack to force the build-env.sh file to be generated
 # And setup the project
@@ -12,4 +11,4 @@ fi
 
 . ./scripts/setup-noninteractive.sh
 
-MOD=$MOD sbt -mem 4096 "${BUILD_CLEAN}server/Docker/publish"
+MOD=$BUILD_MOD sbt -mem 4096 "${BUILD_CLEAN}server/Docker/publish"
