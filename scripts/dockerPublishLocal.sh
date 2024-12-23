@@ -8,6 +8,6 @@
 if [ ! -e $BUILD_ENV_FILE ]; then
     sbt projects
 fi
-. scripts/setup.sh
+. ./scripts/setup-noninteractive.sh
 
 MOD=$MOD sbt "${BUILD_CLEAN}server/Docker/publishLocal"

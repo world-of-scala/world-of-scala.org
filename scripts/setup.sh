@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+#
+# This script is used to setup the project
+# - Install npm dependencies
+# - Generate Scala.js bindings
+#
 . ./scripts/env.sh
 
 if [ ! -e $BUILD_ENV_FILE ]; then
