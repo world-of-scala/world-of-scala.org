@@ -16,9 +16,7 @@ import io.getquill.jdbczio.Quill
 import io.getquill.SnakeCase
 import io.getquill.jdbczio.Quill.Postgres
 
-
 import org.worldofscala.domain.errors.{InvalidCredentialsException, UserNotFoundException, UserAlreadyExistsException}
-import org.worldofscala.auth.JWTService
 
 import dev.cheleb.ziochimney.*
 
@@ -30,7 +28,6 @@ trait UserService {
 
 class UserServiceLive private (
   userRepository: UserRepository,
-  jwtService: JWTService,
   quill: Quill.Postgres[SnakeCase]
 ) extends UserService
     with TransactionSupport(quill) {
@@ -77,6 +74,6 @@ class UserServiceLive private (
 }
 
 object UserServiceLive {
-  val layer: RLayer[UserRepository & JWTService & Postgres[SnakeCase], UserService] =
+  val layer: RLayer[UserRepository & Postgres[SnakeCase], UserService] =
     ZLayer.derive[UserServiceLive]
 }
