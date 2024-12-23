@@ -28,7 +28,7 @@ class OrganisationRepositoryLive private (val quill: Quill.Postgres[SnakeCase])
   inline given SchemaMeta[NewOrganisationEntity] = schemaMeta[NewOrganisationEntity]("organisations")
   inline given InsertMeta[NewOrganisationEntity] = insertMeta[NewOrganisationEntity](_.id, _.creationDate)
   inline given SchemaMeta[OrganisationEntity]    = schemaMeta[OrganisationEntity]("organisations")
-  inline given UpdateMeta[OrganisationEntity]    = updateMeta[OrganisationEntity](_.id, _.creationDate)
+  inline given UpdateMeta[OrganisationEntity]    = updateMeta[OrganisationEntity](_.id, _.creationDate, _.createdBy)
 
   override def create(user: NewOrganisationEntity): Task[OrganisationEntity] =
     run(query[NewOrganisationEntity].insertValue(lift(user)).returning(r => r))

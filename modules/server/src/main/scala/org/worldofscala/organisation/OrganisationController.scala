@@ -22,7 +22,7 @@ class OrganisationController private (organisationService: OrganisationService, 
 
   val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create.zServerAuthenticatedLogic {
     userId => organisation =>
-      organisationService.create(organisation)
+      organisationService.create(organisation, userId.id)
   }
 
   val listAll: ServerEndpoint[Any, Task] = OrganisationEndpoint.all.zServerLogic { _ =>

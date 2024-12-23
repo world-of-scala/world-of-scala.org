@@ -49,7 +49,7 @@ object LatLon:
   val empty: LatLon = LatLon(0.0, 0.0)
 
 case class Organisation(
-  id: UUID,
+  createdBy: UUID,
   name: String,
   location: LatLon
 ) derives JsonCodec,

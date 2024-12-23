@@ -4,7 +4,7 @@ import java.util.UUID
 import java.time.ZonedDateTime
 
 final case class NewOrganisationEntity(
-  id: Option[UUID] = None,
+  createdBy: UUID,
   name: String,
   meshId: Option[UUID] = None,
   location: LatLon,
@@ -12,7 +12,7 @@ final case class NewOrganisationEntity(
 )
 
 final case class OrganisationEntity(
-  id: UUID,
+  createdBy: UUID,
   name: String,
   meshId: Option[UUID],
   location: LatLon,

@@ -7,9 +7,10 @@ import dev.cheleb.ziochimney.*
 import io.scalaland.chimney.dsl._
 import org.scalafmt.config.Indents.RelativeToLhs.`match`
 import zio.stream.ZStream
+import java.util.UUID
 
 trait OrganisationService {
-  def create(organisation: NewOrganisation): Task[Organisation]
+  def create(organisation: NewOrganisation, userUUID: UUID): Task[Organisation]
   def listAll(): Task[List[Organisation]]
   def streamAll(): Task[ZStream[Any, Throwable, Byte]]
 
@@ -25,7 +26,6 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
           ZStream.fromIterable(
             (entity
               .into[Organisation]
-//              .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, long))))
               .transform
               .toJson + "\n").getBytes
           )
@@ -38,15 +38,15 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
       entities.map(entity =>
         entity
           .into[Organisation]
-//          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, long))))
           .transform
       )
     )
 
-  override def create(organisation: NewOrganisation): Task[Organisation] =
+  override def create(organisation: NewOrganisation, userUUID: UUID): Task[Organisation] =
 
     val organisationEntity =
       NewOrganisationEntity(
+        createdBy = userUUID,
         name = organisation.name,
         location = organisation.location
       )
@@ -56,7 +56,6 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
       .map(entity =>
         entity
           .into[Organisation]
-//          .withFieldComputed(_.location, e => e.lat.flatMap(lat => e.long.map(long => LatLon(lat, lat))))
           .transform
       )
 }
