@@ -102,13 +102,20 @@ object DeploymentSettings {
             rootFolder.mkdirs()
 
             Def.task {
-              scala.sys.process
-                .Process(
-                  List("npm", "run", "build", "--", "--emptyOutDir", "--outDir", rootFolder.getAbsolutePath),
-                  (client / baseDirectory).value
-                )
-                .!
-              (rootFolder ** "*.*").get
+              if (
+                scala.sys.process
+                  .Process(
+                    List("npm", "run", "build", "--", "--emptyOutDir", "--outDir", rootFolder.getAbsolutePath),
+                    (client / baseDirectory).value
+                  )
+                  .! == 0
+              ) {
+                println(s"Generated static files in ${rootFolder}")
+                (rootFolder ** "*.*").get
+              } else {
+                println(s"Failed to generate static files in ${rootFolder}")
+                throw new IllegalStateException("Vite build failed")
+              }
 
             }
 
