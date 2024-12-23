@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 #
 # This script is used to run the fullstack server
 #  See getoptions.sh for the command line options

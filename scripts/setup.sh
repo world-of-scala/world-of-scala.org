@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 #
 # This script is used to setup the project
 # - Install npm dependencies
@@ -45,15 +45,28 @@ function npmInstall() {
     fi
 }
 
-cd modules/client
+pushd() {
+    command pushd "$@" >/dev/null
+}
 
+popd() {
+    command popd "$@" >/dev/null
+}
+
+pushd modules/client
 npmInstall
+popd
+
+pushd modules/shared/.js
+npmInstall
+popd
 
 #
 # Generating scalablytyped
 #
-cd scalablytyped
+pushd modules/client/scalablytyped
 npmInstall
-cd ../../..
+popd
+
 echo "Generating Scala.js bindings..."
 sbt -mem 8192 compile

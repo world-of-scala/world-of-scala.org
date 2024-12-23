@@ -1,5 +1,5 @@
 . ./scripts/env.sh
-
+set -e
 #
 # This script is used to setup the project in a non-interactive way
 # Allow to choose between ESModule or CommonJs

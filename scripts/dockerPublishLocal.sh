@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 # Import the project environment variables
 . ./scripts/env.sh
 

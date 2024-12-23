@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 . ./scripts/env.sh -d
 
 . $BUILD_ENV_FILE
