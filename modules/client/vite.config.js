@@ -16,7 +16,7 @@ export default defineConfig({
         uriPrefix: 'scalajs',
     })],
     build: {
-        sourcemap: 'false',
+        sourcemap: true,
     },
     base: "/public/",
 
