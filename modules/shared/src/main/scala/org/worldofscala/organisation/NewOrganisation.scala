@@ -11,7 +11,6 @@ import zio.prelude.magnolia.*
 import dev.cheleb.scalamigen.NoPanel
 import zio.prelude.Debug.Repr
 import Math.{PI, cos, sin}
-import sttp.tapir.CodecFormat.Json
 
 @NoPanel
 case class NewOrganisation(
