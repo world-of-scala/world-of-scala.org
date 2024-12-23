@@ -1,17 +1,14 @@
 package org.worldofscala.organisation
 
 import io.getquill.jdbczio.Quill
-import io.getquill.SnakeCase
 import org.worldofscala.*
 import io.getquill.*
 import io.scalaland.chimney.dsl.*
 
 import zio.*
-import zio.json.*
 import zio.stream.ZStream
 import org.worldofscala.repositories.PGpointSupport
 import java.util.UUID
-import org.worldofscala.user.User
 import org.worldofscala.user.UserRepository
 
 trait OrganisationRepository {

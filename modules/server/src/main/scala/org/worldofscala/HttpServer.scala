@@ -13,7 +13,6 @@ import sttp.tapir.server.interceptor.cors.CORSInterceptor
 
 import org.worldofscala.observability.*
 import org.worldofscala.services.*
-import org.worldofscala.repositories.*
 import org.worldofscala.user.UserRepositoryLive
 import org.worldofscala.user.UserServiceLive
 import org.worldofscala.auth.JWTServiceLive

@@ -2,11 +2,9 @@ package org.worldofscala.health
 
 import zio.*
 import sttp.tapir.*
-import sttp.tapir.ztapir.*
 import sttp.tapir.server.ServerEndpoint
 import org.worldofscala.http.endpoints.HealthEndpoint
 import dev.cheleb.ziotapir.BaseController
-import sttp.capabilities.zio.ZioStreams
 
 class HealthController private extends BaseController with HealthEndpoint {
 

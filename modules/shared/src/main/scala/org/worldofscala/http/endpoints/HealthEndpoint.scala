@@ -1,7 +1,6 @@
 package org.worldofscala.http.endpoints
 
 import sttp.tapir.*
-import zio.*
 
 trait HealthEndpoint {
   val healthEndpoint = endpoint

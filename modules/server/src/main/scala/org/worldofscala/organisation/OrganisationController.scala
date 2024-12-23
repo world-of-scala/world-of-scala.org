@@ -3,18 +3,12 @@ package org.worldofscala.organisation
 import dev.cheleb.ziotapir.SecuredBaseController
 
 import zio.*
-import zio.json.*
 
-import sttp.model.Uri
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
 
-import org.worldofscala.domain.errors.NotHostHeaderException
 import org.worldofscala.auth.*
 import org.worldofscala.user.UserID
-import zio.stream.ZStream
-import java.util.UUID
-import sttp.capabilities.Streams
 import sttp.capabilities.zio.ZioStreams
 
 class OrganisationController private (organisationService: OrganisationService, jwtService: JWTService)

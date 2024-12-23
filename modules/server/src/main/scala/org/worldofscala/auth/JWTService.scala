@@ -3,7 +3,6 @@ package org.worldofscala.auth
 import zio.*
 
 import java.time.Duration
-import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.time.Clock as JavaClock
 
@@ -13,7 +12,6 @@ import com.auth0.jwt.algorithms.Algorithm
 import org.worldofscala.config.Configs
 import org.worldofscala.config.JWTConfig
 
-import sttp.model.Uri
 import java.util.UUID
 
 import org.worldofscala.user.*

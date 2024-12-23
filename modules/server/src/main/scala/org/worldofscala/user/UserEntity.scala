@@ -2,7 +2,6 @@ package org.worldofscala.user
 
 import java.time.ZonedDateTime
 import io.scalaland.chimney.Transformer
-import java.util.UUID
 
 case class NewUserEntity(
   id: Option[User.Id],

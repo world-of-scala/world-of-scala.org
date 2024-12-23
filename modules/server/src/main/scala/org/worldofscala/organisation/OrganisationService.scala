@@ -3,11 +3,8 @@ package org.worldofscala.organisation
 import zio.*
 import zio.json.*
 import zio.stream.*
-import dev.cheleb.ziochimney.*
 import io.scalaland.chimney.dsl._
-import org.scalafmt.config.Indents.RelativeToLhs.`match`
 import zio.stream.ZStream
-import java.util.UUID
 import org.worldofscala.user.User
 
 trait OrganisationService {

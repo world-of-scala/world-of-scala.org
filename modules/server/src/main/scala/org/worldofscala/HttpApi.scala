@@ -1,14 +1,11 @@
 package org.worldofscala
 
 import zio.*
-import sttp.tapir.ztapir.*
 import sttp.tapir.server.ServerEndpoint
 import sttp.capabilities.zio.ZioStreams
 
-import dev.cheleb.ziotapir.BaseController
 import org.worldofscala.auth.JWTService
 import org.worldofscala.health.HealthController
-import org.worldofscala.user.*
 import org.worldofscala.organisation.*
 
 import user.*

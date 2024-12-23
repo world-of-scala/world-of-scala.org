@@ -4,16 +4,10 @@ import zio.*
 import sttp.tapir.*
 import sttp.tapir.json.zio.*
 import sttp.tapir.generic.auto.*
-import org.worldofscala.domain.*
-import org.worldofscala.auth.LoginPassword
-import sttp.model.HeaderNames
 import org.worldofscala.BaseEndpoint
-import org.worldofscala.auth.*
 import sttp.capabilities.zio.ZioStreams
 
 import zio.stream.*
-import sttp.model.Header
-import sttp.model.MediaType
 object OrganisationEndpoint extends BaseEndpoint:
 
   val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint

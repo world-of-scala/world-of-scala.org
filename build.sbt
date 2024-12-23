@@ -15,12 +15,15 @@ name := "World Of Scala"
 
 inThisBuild(
   List(
-    version      := "0.0.2",
-    scalaVersion := scala3,
+    version           := "0.0.2",
+    scalaVersion      := scala3,
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
-      "-Xfatal-warnings"
+      "-Wunused:all"
+//      "-Xfatal-warnings"
     )
   )
 )

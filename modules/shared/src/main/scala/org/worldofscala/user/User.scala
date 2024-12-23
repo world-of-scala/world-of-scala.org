@@ -6,7 +6,6 @@ import java.time.ZonedDateTime
 import java.util.UUID
 import zio.prelude.*
 import zio.prelude.Debug.Repr
-import zio.prelude.Debug.Renderer
 import zio.prelude.magnolia.*
 
 import dev.cheleb.scalamigen.NoPanel

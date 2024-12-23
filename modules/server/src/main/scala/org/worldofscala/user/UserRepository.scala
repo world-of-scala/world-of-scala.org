@@ -2,16 +2,12 @@ package org.worldofscala.user
 
 import zio.*
 
-import org.worldofscala.user.UserEntity
-import org.worldofscala.user.NewUserEntity
 
 import io.getquill.*
 import io.getquill.jdbczio.*
 import io.getquill.jdbczio.Quill.Postgres
 import io.scalaland.chimney.dsl.*
 
-import io.getquill.jdbczio.Quill.DataSource
-import io.getquill.context.jdbc.PostgresJdbcTypes
 import java.util.UUID
 
 trait UserRepository {

@@ -2,7 +2,6 @@ package org.worldofscala.organisation
 
 import java.util.UUID
 import java.time.ZonedDateTime
-import io.getquill.MappedEncoding
 import org.worldofscala.user.User
 
 final case class NewOrganisationEntity(

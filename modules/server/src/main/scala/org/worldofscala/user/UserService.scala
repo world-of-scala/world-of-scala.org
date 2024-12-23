@@ -3,13 +3,11 @@ package org.worldofscala.user
 import zio.*
 
 import io.scalaland.chimney.dsl._
-import java.time.Instant
 import java.time.ZonedDateTime
 
 import org.worldofscala.auth.*
 import org.worldofscala.domain.*
 
-import org.worldofscala.user.UserRepository
 import org.worldofscala.repositories.TransactionSupport
 
 import java.sql.SQLException
@@ -18,7 +16,6 @@ import io.getquill.jdbczio.Quill
 import io.getquill.SnakeCase
 import io.getquill.jdbczio.Quill.Postgres
 
-import io.scalaland.chimney.Transformer
 
 import org.worldofscala.domain.errors.{InvalidCredentialsException, UserNotFoundException, UserAlreadyExistsException}
 import org.worldofscala.auth.JWTService

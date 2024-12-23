@@ -1,7 +1,6 @@
 package org.worldofscala.organisation
 
 import java.util.UUID
-import java.time.ZonedDateTime
 
 import sttp.tapir.Schema
 import zio.json.JsonCodec
