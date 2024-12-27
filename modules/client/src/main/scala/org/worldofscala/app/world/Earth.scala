@@ -32,7 +32,7 @@ object Earth {
     val eartthDiv = div()
 
     val scene  = new Scene();
-    val camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    val camera = new PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 100);
 
     camera.position.set(0, 0, 5)
 
@@ -43,7 +43,7 @@ object Earth {
     );
 
     renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(window.innerWidth * 0.88, window.innerHeight * .88);
+    renderer.setSize(window.innerWidth * .88, window.innerHeight * .88);
 
     val orbitControl = OrbitControls(camera, renderer.domElement)
 
