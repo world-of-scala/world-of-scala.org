@@ -1,21 +1,20 @@
 package org.worldofscala.organisation
 
 import com.raquo.laminar.api.L.*
-import org.scalajs.dom.FormData
+
 import dev.cheleb.ziotapir.laminar.*
 import org.worldofscala.earth.MeshEndpoint
 
-import org.scalajs.dom.Blob
 import java.io.*
 
 import org.worldofscala.app.session
 
-import scala.scalajs.js.typedarray.Uint8Array
-import org.scalajs.dom.ReadableStreamReader
+import scala.scalajs.js.typedarray.*
 
 object CreateMesh:
 
-  val bb = new FormData
+  val name                                       = Var("")
+  val fileVar: Var[Option[org.scalajs.dom.File]] = Var(None)
 
   def apply() =
     div(
@@ -26,7 +25,8 @@ object CreateMesh:
         div(
           input(
             nameAttr    := "name",
-            placeholder := "Name"
+            placeholder := "Name",
+            onChange.mapToValue --> name
           )
         ),
         div(
@@ -37,9 +37,8 @@ object CreateMesh:
             onChange.mapToFiles --> { f =>
               f match {
                 case Seq(file) =>
-                  bb.delete("data")
-                  bb.append("data", file, file.name)
                   println(file.name)
+                  fileVar.set(Some(file))
                 case _ =>
               }
 
@@ -52,31 +51,14 @@ object CreateMesh:
             "Create",
             onClick --> { ev =>
               ev.preventDefault()
-              bb.get("data") match {
-                case blob: Blob =>
-                  val baos = new ByteArrayOutputStream()
-
-                  val reader = blob.stream().getReader()
-
-                  def read(reader: ReadableStreamReader[Uint8Array]): Unit = reader.read().`then` { chunk =>
-                    chunk.done match {
-                      case true => ()
-                      case false =>
-                        chunk.value.foreach(s => baos.write(s.toInt))
-                        read(reader)
-                    }
+              fileVar.now() match {
+                case Some(file) =>
+                  file.arrayBuffer().`then` { buffer =>
+                    val in = new ByteArrayInputStream(new Int8Array(buffer).toArray)
+                    MeshEndpoint.streamCreate(name.now(), in).runJs
                   }
-                  read(reader)
-                  val in = new ByteArrayInputStream(baos.toByteArray())
-                  if (true)
-                    MeshEndpoint.streamCreate("name", in).runJs
-
-                  println("Blobyy")
-                case _ =>
-                  println("No file")
-//                  MeshEndpoint.create(NewMesh("name", blob.))
+                case None =>
               }
-//              MeshEndpoint.create(NewMesh("name", bb.))
             }
           )
         )
