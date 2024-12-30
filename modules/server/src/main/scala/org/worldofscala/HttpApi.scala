@@ -10,6 +10,8 @@ import org.worldofscala.organisation.*
 
 import user.*
 import dev.cheleb.ziotapir.*
+import org.worldofscala.earth.MeshController
+import org.worldofscala.earth.MeshService
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html
 object HttpApi extends Routes {
@@ -19,12 +21,15 @@ object HttpApi extends Routes {
       healthController       <- HealthController.makeZIO
       personController       <- UserController.makeZIO
       organisationController <- OrganisationController.makeZIO
-    } yield List(healthController, personController, organisationController)
+      meshController         <- MeshController.makeZIO
+    } yield List(healthController, personController, organisationController, meshController)
 
-  def endpointsZIO: URIO[UserService & JWTService & OrganisationService, List[ServerEndpoint[Any, Task]]] =
+  def endpointsZIO
+    : URIO[UserService & JWTService & OrganisationService & MeshService, List[ServerEndpoint[Any, Task]]] =
     makeControllers.map(gatherRoutes(_.routes))
 
-  def streamEndpointsZIO: URIO[UserService & JWTService & OrganisationService, List[ServerEndpoint[ZioStreams, Task]]] =
+  def streamEndpointsZIO
+    : URIO[UserService & JWTService & OrganisationService & MeshService, List[ServerEndpoint[ZioStreams, Task]]] =
     makeControllers.map(gatherRoutes(_.streamRoutes))
 
   def endpoints = for {

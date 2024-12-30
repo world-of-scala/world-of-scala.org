@@ -9,6 +9,7 @@ import dev.cheleb.scalamigen.*
 import dev.cheleb.ziotapir.laminar.*
 
 import org.worldofscala.app.given
+import org.worldofscala.app.Router
 
 object CreateOrganisation:
 
@@ -64,7 +65,8 @@ object CreateOrganisation:
 
           }
         )
-      )
+      ),
+      a(href := Router.uiRoute("organisation/mesh/new"), "New mesh")
 //      renderToast(organisationBus, errorBus)
     )
 

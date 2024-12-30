@@ -65,8 +65,11 @@ object Organisation:
   opaque type Id <: UUID = UUID
 
   object Id:
-    def apply(uuid: UUID): Id         = uuid
+    inline def apply(uuid: UUID): Id  = uuid
     def unapply(id: Id): Option[UUID] = Some(id)
 
     given JsonCodec[Id] = JsonCodec.uuid
     given Schema[Id]    = Schema.schemaForUUID
+
+object Test:
+  val id = Organisation.Id(UUID.randomUUID())
