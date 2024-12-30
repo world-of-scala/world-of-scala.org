@@ -2,6 +2,8 @@ package org.worldofscala.app.world
 
 import org.scalajs.dom.window
 
+import dev.cheleb.threescalajs.{*, given}
+
 import com.raquo.laminar.api.L.*
 
 import typings.webxr.*
