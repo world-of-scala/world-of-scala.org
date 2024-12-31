@@ -54,7 +54,8 @@ case class Organisation(
   id: Organisation.Id,
   createdBy: User.Id,
   name: String,
-  location: LatLon
+  location: LatLon,
+  meshId: Option[Mesh.Id]
 ) derives JsonCodec,
       Schema,
       Debug:
