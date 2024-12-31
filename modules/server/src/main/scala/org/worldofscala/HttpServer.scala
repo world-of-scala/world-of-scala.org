@@ -17,7 +17,7 @@ import org.worldofscala.user.UserRepositoryLive
 import org.worldofscala.user.UserServiceLive
 import org.worldofscala.auth.JWTServiceLive
 import org.worldofscala.organisation.*
-import org.worldofscala.auth.JWTService
+
 import org.worldofscala.user.UserService
 import org.worldofscala.config.*
 import org.worldofscala.earth.MeshServiceLive
