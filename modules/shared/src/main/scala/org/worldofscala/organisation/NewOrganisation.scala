@@ -11,11 +11,13 @@ import dev.cheleb.scalamigen.NoPanel
 import zio.prelude.Debug.Repr
 import Math.{PI, cos, sin}
 import org.worldofscala.user.User
+import org.worldofscala.earth.Mesh
 
 @NoPanel
 case class NewOrganisation(
   name: String,
-  location: LatLon
+  location: LatLon,
+  mesh: Mesh.Id
 ) derives JsonCodec,
       Schema,
       Debug:

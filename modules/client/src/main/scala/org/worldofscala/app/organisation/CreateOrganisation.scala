@@ -10,6 +10,8 @@ import dev.cheleb.ziotapir.laminar.*
 
 import org.worldofscala.app.given
 import org.worldofscala.app.Router
+import org.worldofscala.earth.Mesh
+import java.util.UUID
 
 object CreateOrganisation:
 
@@ -35,9 +37,19 @@ object CreateOrganisation:
   given Defaultable[LatLon] with
     def default = LatLon(46.5188, 6.5593)
 
+  given Form[Mesh.Id] = stringFormWithValidation(using
+    new Validator[Mesh.Id] {
+      override def validate(value: String): Either[String, Mesh.Id] =
+        Mesh.Id(UUID.fromString(value)) match {
+          case id if id == Mesh.default => Left("Invalid mesh")
+          case id                       => Right(id)
+        }
+    }
+  )
+
   def apply() =
     val organisationVar = Var(
-      NewOrganisation("", LatLon.empty)
+      NewOrganisation("", LatLon.empty, Mesh.default)
     )
 
     div(
