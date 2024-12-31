@@ -11,7 +11,7 @@ import dev.cheleb.ziotapir.laminar.*
 import org.worldofscala.app.given
 import org.worldofscala.app.Router
 import org.worldofscala.earth.Mesh
-import java.util.UUID
+import org.worldofscala.earth.MeshEndpoint
 
 object CreateOrganisation:
 
@@ -37,26 +37,23 @@ object CreateOrganisation:
   given Defaultable[LatLon] with
     def default = LatLon(46.5188, 6.5593)
 
-  given Form[Mesh.Id] = stringFormWithValidation(using
-    new Validator[Mesh.Id] {
-      override def validate(value: String): Either[String, Mesh.Id] =
-        Mesh.Id(UUID.fromString(value)) match {
-          case id if id == Mesh.default => Left("Invalid mesh")
-          case id                       => Right(id)
-        }
-    }
-  )
-
   def apply() =
     val organisationVar = Var(
       NewOrganisation("", LatLon.empty, Mesh.default)
     )
+    val meshes = EventBus[List[(Mesh.Id, String)]]()
 
     div(
+      onMountCallback { _ =>
+        MeshEndpoint.all(()).emitTo(meshes)
+      },
       h1("Create  Organisation"),
       div(
         styleAttr := "float: left;",
-        organisationVar.asForm,
+        child <-- meshes.events.toSignal(Nil).map { meshes =>
+          given Form[Mesh.Id] = selectMappedForm(meshes, m => m._1, m => m._2)
+          organisationVar.asForm
+        },
         children <-- organisationVar.signal.map {
           _.errorMessages.map(div(_)).toSeq
         }
