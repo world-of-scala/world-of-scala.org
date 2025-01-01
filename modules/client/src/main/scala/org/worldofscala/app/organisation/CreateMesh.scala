@@ -18,6 +18,7 @@ import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
 import typings.three.examplesJsmAddonsMod.OrbitControls
 import dev.cheleb.threescalajs.given
 import typings.three.examplesJsmAddonsMod.GLTFLoader
+import be.doeraene.webcomponents.ui5.Button
 
 object CreateMesh:
 
@@ -26,52 +27,51 @@ object CreateMesh:
 
   def apply() =
     div(
-      form(
-        method := "POST",
-        action := "http://localhost:8080/api/mesh",
-        h1("Create Mesh"),
-        div(
-          input(
-            nameAttr    := "name",
-            placeholder := "Name",
-            onChange.mapToValue --> name
-          )
-        ),
-        div(
-          styleAttr := "float: both;",
-          input(
-            nameAttr    := "data",
-            placeholder := "Data",
-            `type`      := "file",
-            onChange.mapToFiles --> { f =>
-              f match {
-                case Seq(file) =>
-                  println(file.name)
-                  fileVar.set(Some(file))
-                case _ =>
-              }
+      h1("Create Mesh"),
+      div(
+        "Name: ",
+        input(
+          nameAttr    := "name",
+          placeholder := "Name",
+          onInput.mapToValue --> name
+        )
+      ),
+      div(
+        input(
+          `type` := "file",
+          accept := ".glb",
+          onChange.mapToFiles --> { f =>
+            f match {
+              case file :: Nil =>
+                fileVar.set(Some(file))
+              case _ =>
+                fileVar.set(None)
+            }
 
-            }
-          )
+          }
         ),
         div(
-          h2("Preview"),
-          child.maybe <-- fileVar.signal.map(preview)
-        ),
-        div(
-          button(
-            "Create",
-            onClick --> { ev =>
-              ev.preventDefault()
-              fileVar.now() match {
-                case Some(file) =>
-                  file.arrayBuffer().`then` { buffer =>
-                    val in = new ByteArrayInputStream(new Int8Array(buffer).toArray)
-                    MeshEndpoint.streamCreate(name.now(), in).runJs
-                  }
-                case None =>
+          display <-- fileVar.signal.map(o => if o.isEmpty then "none" else "block"),
+          div(
+            h2("Preview"),
+            child.maybe <-- fileVar.signal.map(preview)
+          ),
+          div(
+            Button(
+              "Create",
+              disabled <-- name.signal.map(_.isEmpty),
+              onClick --> { ev =>
+                ev.preventDefault()
+                fileVar.now() match {
+                  case Some(file) =>
+                    file.arrayBuffer().`then` { buffer =>
+                      val in = new ByteArrayInputStream(new Int8Array(buffer).toArray)
+                      MeshEndpoint.streamCreate(name.now(), in).runJs
+                    }
+                  case None =>
+                }
               }
-            }
+            )
           )
         )
       )
