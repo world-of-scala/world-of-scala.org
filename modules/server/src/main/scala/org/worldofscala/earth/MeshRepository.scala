@@ -7,9 +7,10 @@ import org.worldofscala.earth.Mesh.Id
 
 import zio.*
 import io.scalaland.chimney.dsl.*
+import zio.stream.ZStream
 
 trait MeshRepository:
-//  def getMesh(id: Mesh.Id): Option[Mesh]
+  def get(id: Mesh.Id): Task[Option[MeshEntity]]
   def saveMesh(mesh: NewMeshEntity): Task[MeshEntity]
 //   def deleteMesh(id: Mesh.Id): Unit
 //   def updateMesh(mesh: Mesh): Unit
@@ -33,6 +34,9 @@ class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends 
     run(query[NewMeshEntity].insertValue(lift(mesh)).returning(r => r))
       .map(r => r.intoPartial[MeshEntity].transform.asOption)
       .someOrFail(new RuntimeException(""))
+
+  override def get(id: Id): Task[Option[MeshEntity]] =
+    run(query[MeshEntity].filter(_.id == lift(id))).map(_.headOption)
 
   override def listMeshes(): Task[List[(Mesh.Id, String)]] =
     run(query[MeshEntity].map(mesh => (mesh.id, mesh.label)))

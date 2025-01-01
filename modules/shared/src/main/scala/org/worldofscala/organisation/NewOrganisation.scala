@@ -17,7 +17,7 @@ import org.worldofscala.earth.Mesh
 case class NewOrganisation(
   name: String,
   location: LatLon,
-  mesh: Mesh.Id
+  meshId: Mesh.Id
 ) derives JsonCodec,
       Schema,
       Debug:

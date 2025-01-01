@@ -46,7 +46,8 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
       NewOrganisationEntity(
         createdBy = userUUID,
         name = organisation.name,
-        location = organisation.location
+        location = organisation.location,
+        meshId = Some(organisation.meshId)
       )
 
     organisationRepository

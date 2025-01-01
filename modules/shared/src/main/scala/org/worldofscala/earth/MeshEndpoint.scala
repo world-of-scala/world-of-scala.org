@@ -6,12 +6,17 @@ import org.worldofscala.BaseEndpoint
 
 import sttp.tapir.json.zio.*
 import sttp.tapir.generic.auto.*
+import org.worldofscala.earth.Mesh.Id
+import java.io.InputStream
+
+import sttp.capabilities.zio.ZioStreams
+import zio.stream.ZStream
 
 object MeshEndpoint extends BaseEndpoint {
 
-  val streamCreate = baseSecuredEndpoint
+  val streamCreate: Endpoint[String, (String, InputStream), Throwable, Id, Any] = baseSecuredEndpoint
     .tag("Admin")
-    .name("mesh")
+    .name("mesh-create")
     .post
     .in("mesh" / path[String]("name"))
     .in(
@@ -23,11 +28,19 @@ object MeshEndpoint extends BaseEndpoint {
 
   val all: PublicEndpoint[Unit, Throwable, List[(Mesh.Id, String)], Any] = baseEndpoint
     .tag("Admin")
-    .name("mesh")
+    .name("meshes")
     .get
     .in("mesh")
     .out(jsonBody[List[(Mesh.Id, String)]])
     .description("Get all meshes")
+
+  val get: Endpoint[Unit, Id, Throwable, ZStream[Any, Throwable, Byte], ZioStreams] = baseEndpoint
+    .tag("Admin")
+    .name("mesh")
+    .get
+    .in("mesh" / path[Mesh.Id]("id"))
+    .out(streamBody(ZioStreams)(Schema.binary, CodecFormat.OctetStream()))
+    .description("Get mesh")
 
 //   val allStream: Endpoint[Unit, Unit, Throwable, Stream[Throwable, Byte], ZioStreams] = baseEndpoint
 //     .tag("Admin")

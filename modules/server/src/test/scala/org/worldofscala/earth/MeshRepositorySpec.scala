@@ -34,7 +34,7 @@ object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes
           meshEntities <- repository.listMeshes()
         } yield meshEntities
 
-        program.map(meshEntities => assert(meshEntities.size)(equalTo(1)))
+        program.map(meshEntities => assert(meshEntities.size)(equalTo(2)))
       }
     ).provide(
       MeshRepositoryLive.layer,

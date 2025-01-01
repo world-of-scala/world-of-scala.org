@@ -7,3 +7,5 @@ CREATE TABLE meshes(
     PRIMARY KEY (id)
 );
 
+INSERT INTO meshes(label, blob)
+    VALUES ('cube', pg_read_file('/etc/resolv.conf')::bytea)

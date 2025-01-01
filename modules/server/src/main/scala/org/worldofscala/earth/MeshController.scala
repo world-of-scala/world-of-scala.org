@@ -9,6 +9,7 @@ import zio.*
 import sttp.tapir.server.*
 import sttp.tapir.ztapir.*
 import sttp.capabilities.zio.ZioStreams
+import zio.stream.ZStream
 
 class MeshController private (meshService: MeshService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
@@ -26,14 +27,14 @@ class MeshController private (meshService: MeshService, jwtService: JWTService)
       meshService.createStream(name, stream)
   }
 
-//   val streamAll: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.allStream.zServerLogic { _ =>
-//     meshService.streamAll()
-//   }
+  val get: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.get.zServerLogic { id =>
+    meshService.get(id).map(_.blob).map(ZStream.fromIterable)
+  }
 
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(listAll)
 
-  override def streamRoutes: List[ServerEndpoint[ZioStreams, Task]] = List(createStream)
+  override def streamRoutes: List[ServerEndpoint[ZioStreams, Task]] = List(createStream, get)
 
 }
 
