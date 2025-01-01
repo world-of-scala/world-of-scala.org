@@ -11,11 +11,13 @@ import dev.cheleb.scalamigen.NoPanel
 import zio.prelude.Debug.Repr
 import Math.{PI, cos, sin}
 import org.worldofscala.user.User
+import org.worldofscala.earth.Mesh
 
 @NoPanel
 case class NewOrganisation(
   name: String,
-  location: LatLon
+  location: LatLon,
+  meshId: Mesh.Id
 ) derives JsonCodec,
       Schema,
       Debug:
@@ -52,7 +54,8 @@ case class Organisation(
   id: Organisation.Id,
   createdBy: User.Id,
   name: String,
-  location: LatLon
+  location: LatLon,
+  meshId: Option[Mesh.Id]
 ) derives JsonCodec,
       Schema,
       Debug:
@@ -65,8 +68,11 @@ object Organisation:
   opaque type Id <: UUID = UUID
 
   object Id:
-    def apply(uuid: UUID): Id         = uuid
+    inline def apply(uuid: UUID): Id  = uuid
     def unapply(id: Id): Option[UUID] = Some(id)
 
     given JsonCodec[Id] = JsonCodec.uuid
     given Schema[Id]    = Schema.schemaForUUID
+
+object Test:
+  val id = Organisation.Id(UUID.randomUUID())

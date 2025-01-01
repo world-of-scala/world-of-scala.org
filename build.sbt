@@ -24,7 +24,9 @@ inThisBuild(
       "-feature",
       "-Wunused:all"
 //      "-Xfatal-warnings"
-    )
+    ),
+    run / fork := true,
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
 )
 

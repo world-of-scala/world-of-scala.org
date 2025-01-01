@@ -33,9 +33,14 @@ object Router:
                 profile.ProfilePage()
               },
               pathPrefix("organisation") {
-                path("new") {
-                  organisation.CreateOrganisation()
-                }
+                firstMatch(
+                  path("new") {
+                    organisation.CreateOrganisation()
+                  },
+                  path("mesh" / "new") {
+                    organisation.CreateMesh()
+                  }
+                )
               },
               path("demos" / "scalablytyped") {
                 stats.ScalablytypedDemoPage()

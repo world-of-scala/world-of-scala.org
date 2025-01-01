@@ -10,6 +10,7 @@ import zio.stream.ZStream
 import org.worldofscala.repositories.PGpointSupport
 import java.util.UUID
 import org.worldofscala.user.UserRepository
+import org.worldofscala.earth.Mesh
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]
@@ -26,6 +27,11 @@ class OrganisationRepositoryLive private (val quill: Quill.Postgres[SnakeCase])
     MappedEncoding[Organisation.Id, UUID](identity)
   given MappedEncoding[UUID, Organisation.Id] =
     MappedEncoding[UUID, Organisation.Id](Organisation.Id.apply)
+
+  given midEnc: MappedEncoding[Mesh.Id, UUID] =
+    MappedEncoding[Mesh.Id, UUID](identity)
+  given miDec: MappedEncoding[UUID, Mesh.Id] =
+    MappedEncoding[UUID, Mesh.Id](Mesh.Id.apply)
 
   import UserRepository.given
 

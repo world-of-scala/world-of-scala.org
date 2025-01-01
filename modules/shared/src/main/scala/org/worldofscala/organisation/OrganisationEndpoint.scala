@@ -8,6 +8,7 @@ import org.worldofscala.BaseEndpoint
 import sttp.capabilities.zio.ZioStreams
 
 import zio.stream.*
+import org.worldofscala.earth.Mesh
 object OrganisationEndpoint extends BaseEndpoint:
 
   val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint
@@ -21,7 +22,8 @@ object OrganisationEndpoint extends BaseEndpoint:
         .example(
           NewOrganisation(
             "EPFL",
-            LatLon(46.519653, 6.632273)
+            LatLon(46.519653, 6.632273),
+            Mesh.default
           )
         )
     )
