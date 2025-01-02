@@ -18,7 +18,10 @@ import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
 import typings.three.examplesJsmAddonsMod.OrbitControls
 import dev.cheleb.threescalajs.given
 import typings.three.examplesJsmAddonsMod.GLTFLoader
-import be.doeraene.webcomponents.ui5.Button
+import be.doeraene.webcomponents.ui5.*
+import be.doeraene.webcomponents.ui5.configkeys.*
+
+import org.worldofscala.earth.Mesh as OrgaMesh
 
 object CreateMesh:
 
@@ -27,7 +30,7 @@ object CreateMesh:
 
   def apply() =
     div(
-      h1("Create Mesh"),
+      h1("Meshes"),
       div(
         "Name: ",
         input(
@@ -73,7 +76,8 @@ object CreateMesh:
               }
             )
           )
-        )
+        ),
+        allMeshes()
       )
     )
 
@@ -130,5 +134,32 @@ object CreateMesh:
       }
       Some(div2)
     case None => None
-
   }
+
+  def allMeshes() =
+    val meshes = EventBus[List[(OrgaMesh.Id, String)]]()
+
+    div(
+      onMountCallback { _ =>
+        MeshEndpoint.all(()).emitTo(meshes)
+      },
+      overflowY := "scroll",
+      height    := "400px",
+      compat.Table(
+        // _.busy <-- busyState,
+        _.growing := TableGrowingMode.Scroll,
+//        _.events.onLoadMore.mapTo(()) --> loadMoreBus,
+        _.slots.columns := compat.Table.column(width := "12rem", span(lineHeight := "1.4rem", "ID")),
+        _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Cost")),
+        children <-- meshes.events.map(
+          _.map(t =>
+            compat.Table.row(
+              dataAttr("card-name") := t._1.toString,
+              _.cell(t._1.toString()),
+              _.cell(t._2)
+            )
+          )
+        )
+      )
+    )
+end CreateMesh
