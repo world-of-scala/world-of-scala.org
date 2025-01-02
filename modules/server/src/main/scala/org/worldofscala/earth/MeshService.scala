@@ -7,8 +7,9 @@ import io.scalaland.chimney.dsl._
 
 trait MeshService:
   def createStream(name: String, stream: InputStream): Task[Mesh.Id]
+  def updateThumnail(id: Mesh.Id, thumbnail: InputStream): Task[Mesh.Id]
   def get(id: Mesh.Id): Task[Mesh]
-  def listAll(): Task[List[(Mesh.Id, String)]]
+  def listAll(): Task[List[(Mesh.Id, String, Option[String])]]
 
 case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
 
@@ -24,7 +25,10 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
   def createStream(name: String, stream: InputStream): Task[Mesh.Id] =
     val newMeshEntity = NewMeshEntity(None, name, stream.readAllBytes())
     meshRepository.saveMesh(newMeshEntity).map(_.id)
-  def listAll(): Task[List[(Mesh.Id, String)]] = meshRepository.listMeshes()
+
+  def updateThumnail(id: Id, thumbnail: InputStream): Task[Mesh.Id] =
+    meshRepository.updateThumbnail(id, Some(String(thumbnail.readAllBytes()))).map(_ => id)
+  def listAll(): Task[List[(Mesh.Id, String, Option[String])]] = meshRepository.listMeshes()
 //   def streamAll(): Stream[Throwable, Byte] = ???
 
 }

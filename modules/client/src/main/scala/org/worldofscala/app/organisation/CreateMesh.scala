@@ -77,8 +77,13 @@ object CreateMesh:
                 fileVar.now() match {
                   case Some(file) =>
                     file.arrayBuffer().`then` { buffer =>
-                      val in = new ByteArrayInputStream(new Int8Array(buffer).toArray)
-                      MeshEndpoint.streamCreate(name.now(), in).runJs
+                      val in  = new ByteArrayInputStream(new Int8Array(buffer).toArray)
+                      val in2 = new ByteArrayInputStream(thumbnail.signal.now().getBytes())
+                      val ios = for {
+                        id <- MeshEndpoint.streamCreate(name.now(), in)
+                        _  <- MeshEndpoint.putThumbnail(id, in2)
+                      } yield id
+                      ios.runJs
                     }
                   case None =>
                 }
@@ -175,7 +180,7 @@ object CreateMesh:
   }
 
   def allMeshes() =
-    val meshes = EventBus[List[(OrgaMesh.Id, String)]]()
+    val meshes = EventBus[List[(OrgaMesh.Id, String, Option[String])]]()
 
     div(
       onMountCallback { _ =>
@@ -189,12 +194,24 @@ object CreateMesh:
 //        _.events.onLoadMore.mapTo(()) --> loadMoreBus,
         _.slots.columns := compat.Table.column(width := "20rem", span(lineHeight := "1.4rem", "ID")),
         _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Name")),
+        _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Preview")),
         children <-- meshes.events.map(
-          _.map(t =>
+          _.map((id, name, thumbnail) =>
             compat.Table.row(
-              dataAttr("card-name") := t._1.toString,
-              _.cell(t._1.toString()),
-              _.cell(t._2)
+              dataAttr("card-name") := id.toString,
+              _.cell(id.toString()),
+              _.cell(name),
+              _.cell(
+                thumbnail
+                  .map(t =>
+                    img(
+                      src    := t,
+                      width  := "64px",
+                      height := "48px"
+                    )
+                  )
+                  .getOrElse(span("No preview"))
+              )
             )
           )
         )
