@@ -5,6 +5,7 @@ import com.raquo.laminar.api.L.*
 import dev.cheleb.ziotapir.laminar.*
 import org.worldofscala.earth.MeshEndpoint
 import org.scalajs.dom.window
+import org.scalajs.dom
 
 import java.io.*
 
@@ -27,6 +28,9 @@ object CreateMesh:
 
   val name                                       = Var("")
   val fileVar: Var[Option[org.scalajs.dom.File]] = Var(None)
+  val thumbnail = Var(
+    ""
+  )
 
   def apply() =
     div(
@@ -52,6 +56,11 @@ object CreateMesh:
             }
 
           }
+        ),
+        img(
+          src <-- thumbnail.signal,
+          width  := "100",
+          height := "100"
         ),
         div(
           display <-- fileVar.signal.map(o => if o.isEmpty then "none" else "block"),
@@ -84,28 +93,44 @@ object CreateMesh:
   def preview(fileOption: Option[org.scalajs.dom.File]) = fileOption match {
     case Some(file) =>
       val loader = new GLTFLoader()
-
-      val div2   = div()
-      val scene  = new Scene();
-      val camera = new PerspectiveCamera(3, window.innerWidth / window.innerHeight, 1, 100);
-
-      camera.position.set(0, 0, 1)
-
       val renderer = new WebGLRenderer(
         WebGLRendererParameters()
+          .setPreserveDrawingBuffer(true)
           .setAntialias(true)
           .setAlpha(false)
       );
 
+      var rotateX = 0.01d
+      var rotateY = 0.01d
+      val div2 = div(
+        CheckBox(
+          "Rotate",
+          checked := true,
+          onChange.mapToChecked --> { checked =>
+            if (checked) {
+              rotateX = 0.01;
+              rotateY = 0.01;
+            } else {
+              rotateX = 0;
+              rotateY = 0;
+            }
+          }
+        )
+      )
+      val scene  = new Scene();
+      val camera = new PerspectiveCamera(1, window.innerWidth / window.innerHeight, 1, 10);
+
+      camera.position.set(1, 1, 2)
+
       renderer.setPixelRatio(window.devicePixelRatio)
-      renderer.setSize(window.innerWidth * .28, window.innerHeight * .28);
+      renderer.setSize(window.innerWidth * .18, window.innerHeight * .18);
 
       val orbitControl = OrbitControls(camera, renderer.domElement)
 
       val animate: XRFrameRequestCallback = (_, _) => {
 
-        scene.rotation.x += 0.01;
-        scene.rotation.y += 0.01;
+        scene.rotation.x += rotateX;
+        scene.rotation.y += rotateY;
 
         renderer.render(scene, camera);
         orbitControl.update()
@@ -114,20 +139,33 @@ object CreateMesh:
 
       renderer.setAnimationLoop(animate);
 
-      val light = DirectionalLight(0xffffff, 100)
+      val light        = DirectionalLight(0xffffff, 100)
+      val ambientLight = AmbientLight(0xffffff, 100)
 
       light.position.set(5, 5, 5)
       light.lookAt(0, 0, 0)
       scene.add(light)
+      scene.add(ambientLight)
 
-      div2.ref.append(renderer.domElement)
+      val canvas = renderer.domElement
+
+      div2.ref.append(canvas)
+
+      div2.amend(
+        Button(
+          "Snap",
+          onClick --> { _ =>
+            val dataUrl = canvas.toDataURL("image/png")
+            thumbnail.set(dataUrl)
+          }
+        )
+      )
 
       file.arrayBuffer().`then` { buffer =>
         loader.parse(
           buffer,
           "",
           (gltf) => {
-            println(gltf)
             scene.add(gltf.scene.clone(true))
           }
         )
@@ -149,8 +187,8 @@ object CreateMesh:
         // _.busy <-- busyState,
         _.growing := TableGrowingMode.Scroll,
 //        _.events.onLoadMore.mapTo(()) --> loadMoreBus,
-        _.slots.columns := compat.Table.column(width := "12rem", span(lineHeight := "1.4rem", "ID")),
-        _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Cost")),
+        _.slots.columns := compat.Table.column(width := "20rem", span(lineHeight := "1.4rem", "ID")),
+        _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Name")),
         children <-- meshes.events.map(
           _.map(t =>
             compat.Table.row(
