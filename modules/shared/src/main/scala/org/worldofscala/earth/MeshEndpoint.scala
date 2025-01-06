@@ -26,12 +26,21 @@ object MeshEndpoint extends BaseEndpoint {
     .out(jsonBody[Mesh.Id])
     .description("Create mesh")
 
-  val all: PublicEndpoint[Unit, Throwable, List[(Mesh.Id, String)], Any] = baseEndpoint
+  val putThumbnail: Endpoint[String, (Mesh.Id, InputStream), Throwable, Id, Any] = baseSecuredEndpoint
+    .tag("Admin")
+    .name("mesh-create")
+    .put
+    .in("mesh" / path[Mesh.Id]("id") / "thumbnail")
+    .in(inputStreamBody.description("Thumbnail"))
+    .out(jsonBody[Mesh.Id])
+    .description("Create mesh")
+
+  val all: PublicEndpoint[Unit, Throwable, List[(Mesh.Id, String, Option[String])], Any] = baseEndpoint
     .tag("Admin")
     .name("meshes")
     .get
     .in("mesh")
-    .out(jsonBody[List[(Mesh.Id, String)]])
+    .out(jsonBody[List[(Mesh.Id, String, Option[String])]])
     .description("Get all meshes")
 
   val get: Endpoint[Unit, Id, Throwable, ZStream[Any, Throwable, Byte], ZioStreams] = baseEndpoint

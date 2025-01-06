@@ -27,6 +27,11 @@ class MeshController private (meshService: MeshService, jwtService: JWTService)
       meshService.createStream(name, stream)
   }
 
+  val putThumbnail: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.putThumbnail.zServerAuthenticatedLogic {
+    userId => (name, thumbnail) =>
+      meshService.updateThumnail(name, thumbnail)
+  }
+
   val get: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.get.zServerLogic { id =>
     meshService.get(id).map(_.blob).map(ZStream.fromIterable)
   }
@@ -34,7 +39,7 @@ class MeshController private (meshService: MeshService, jwtService: JWTService)
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(listAll)
 
-  override def streamRoutes: List[ServerEndpoint[ZioStreams, Task]] = List(createStream, get)
+  override def streamRoutes: List[ServerEndpoint[ZioStreams, Task]] = List(createStream, putThumbnail, get)
 
 }
 

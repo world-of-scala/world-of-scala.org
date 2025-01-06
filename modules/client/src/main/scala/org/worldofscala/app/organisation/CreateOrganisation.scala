@@ -41,7 +41,7 @@ object CreateOrganisation:
     val organisationVar = Var(
       NewOrganisation("", LatLon.empty, Mesh.default)
     )
-    val meshes = EventBus[List[(Mesh.Id, String)]]()
+    val meshes = EventBus[List[(Mesh.Id, String, Option[String])]]()
 
     div(
       onMountCallback { _ =>
