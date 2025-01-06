@@ -47,13 +47,11 @@ object CreateMesh:
         input(
           `type` := "file",
           accept := ".glb",
-          onChange.mapToFiles --> { f =>
-            f match {
-              case file :: Nil =>
-                fileVar.set(Some(file))
-              case _ =>
-                fileVar.set(None)
-            }
+          onChange.mapToFiles --> {
+            case file :: Nil =>
+              fileVar.set(Some(file))
+            case _ =>
+              fileVar.set(None)
 
           }
         ),
