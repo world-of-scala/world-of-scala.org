@@ -178,7 +178,7 @@ object CreateMesh:
   }
 
   def allMeshes() =
-    val meshes = EventBus[List[(OrgaMesh.Id, String, Option[String])]]()
+    val meshes = EventBus[List[(OrgaMesh.Id, String, Option[String], Long)]]()
 
     div(
       onMountCallback { _ =>
@@ -193,8 +193,9 @@ object CreateMesh:
         _.slots.columns := compat.Table.column(width := "20rem", span(lineHeight := "1.4rem", "ID")),
         _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Name")),
         _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Preview")),
+        _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Count")),
         children <-- meshes.events.map(
-          _.map((id, name, thumbnail) =>
+          _.map((id, name, thumbnail, count) =>
             compat.Table.row(
               dataAttr("card-name") := id.toString,
               _.cell(id.toString()),
@@ -209,7 +210,8 @@ object CreateMesh:
                     )
                   )
                   .getOrElse(span("No preview"))
-              )
+              ),
+              _.cell(count.toString())
             )
           )
         )
