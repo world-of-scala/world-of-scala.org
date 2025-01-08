@@ -9,7 +9,7 @@ trait MeshService:
   def createStream(name: String, stream: InputStream): Task[Mesh.Id]
   def updateThumnail(id: Mesh.Id, thumbnail: InputStream): Task[Mesh.Id]
   def get(id: Mesh.Id): Task[Mesh]
-  def listAll(): Task[List[(Mesh.Id, String, Option[String])]]
+  def listAll(): Task[List[(Mesh.Id, String, Option[String], Long)]]
 
 case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
 
@@ -28,7 +28,7 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
 
   def updateThumnail(id: Id, thumbnail: InputStream): Task[Mesh.Id] =
     meshRepository.updateThumbnail(id, Some(String(thumbnail.readAllBytes()))).map(_ => id)
-  def listAll(): Task[List[(Mesh.Id, String, Option[String])]] = meshRepository.listMeshes()
+  def listAll(): Task[List[(Mesh.Id, String, Option[String], Long)]] = meshRepository.listMeshes()
 //   def streamAll(): Stream[Throwable, Byte] = ???
 
 }
