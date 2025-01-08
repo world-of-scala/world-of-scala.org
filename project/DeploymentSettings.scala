@@ -217,13 +217,14 @@ object DeploymentSettings {
     import DockerPlugin.globalSettings._
     import sbt.Keys._
     Seq(
-      Docker / maintainer     := "Joh doe",
-      Docker / dockerUsername := Some("world-of-scala"),
+      Docker / maintainer := "Joh doe",
+//      Docker / dockerUsername := Some("world-of-scala"),
+      Docker / dockerUsername := Some("cheleb"),
       Docker / packageName    := "world-of-scala",
       dockerBaseImage         := "azul/zulu-openjdk-alpine:23-latest",
-      dockerRepository        := Some("registry.orb.local"),
-      dockerUpdateLatest      := true,
-      dockerExposedPorts      := Seq(8000)
+      // dockerRepository        := Some("registry.orb.local"),
+      dockerUpdateLatest := true,
+      dockerExposedPorts := Seq(8000)
     )
   }
 
