@@ -41,6 +41,8 @@ object DeploymentSettings {
 //   (see vite.config.js)
   val mode = sys.env.get("MOD").getOrElse("demo")
 
+  val overrideDockerRegistry = sys.env.get("LOCAL_DOCKER_REGISTRY").isDefined
+
   val publicFolder = "public"
 
 //
@@ -212,15 +214,21 @@ object DeploymentSettings {
     import DockerPlugin.globalSettings._
     import sbt.Keys._
     Seq(
-      Docker / maintainer := "Joh doe",
-//      Docker / dockerUsername := Some("world-of-scala"),
+      Docker / maintainer     := "Joh doe",
       Docker / dockerUsername := Some("cheleb"),
       Docker / packageName    := "world-of-scala",
       dockerBaseImage         := "azul/zulu-openjdk-alpine:23-latest",
-      // dockerRepository        := Some("registry.orb.local"),
-      dockerUpdateLatest := true,
-      dockerExposedPorts := Seq(8000)
-    )
+      dockerUpdateLatest      := true,
+      dockerExposedPorts      := Seq(8000)
+    ) ++ (overrideDockerRegistry match {
+      case true =>
+        Seq(
+          Docker / dockerRepository := Some("registry.orb.local"),
+          Docker / dockerUsername   := Some("world-of-scala")
+        )
+      case false =>
+        Seq()
+    })
   }
 
 }
