@@ -5,15 +5,15 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 object Dependencies {
   val Versions = new {
     val chimney               = "1.6.0"
-    val flywaydb              = "11.1.0"
+    val flywaydb              = "11.2.0"
     val frontroute            = "0.19.0"
     val iron                  = "2.6.0"
     val javaMail              = "1.6.2"
     val laminarFormDerivation = "0.21.1"
-    val logback               = "1.5.15"
+    val logback               = "1.5.16"
     val mUnit                 = "1.0.2"
     val osLib                 = "0.10.2"
-    val postgresql            = "42.7.4"
+    val postgresql            = "42.7.5"
     val quill                 = "4.8.6"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.16"

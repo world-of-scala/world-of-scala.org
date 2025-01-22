@@ -9,13 +9,12 @@ import Dependencies._
 //
 import DeploymentSettings._
 
-val scala3 = "3.6.2"
+val scala3 = "3.6.3"
 
 name := "World Of Scala"
 
 inThisBuild(
   List(
-    version           := "0.0.2",
     scalaVersion      := scala3,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
