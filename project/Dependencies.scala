@@ -4,7 +4,7 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
   val Versions = new {
-    val chimney               = "1.6.0"
+    val chimney               = "1.7.0"
     val flywaydb              = "11.2.0"
     val frontroute            = "0.19.0"
     val iron                  = "2.6.0"
@@ -17,15 +17,13 @@ object Dependencies {
     val quill                 = "4.8.6"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.16"
-    val stripe                = "25.10.0"
-    val sttp                  = "3.9.6"
-    val tapir                 = "1.11.11"
+    val tapir                 = "1.11.13"
     val zio                   = "2.1.14"
-    val zioConfig             = "4.0.2"
+    val zioConfig             = "4.0.3"
     val zioLaminarTapir       = "0.8.3"
     val zioLogging            = "2.2.4"
     val zioMock               = "1.0.0-RC12"
-    val zioPrelude            = "1.0.0-RC36"
+    val zioPrelude            = "1.0.0-RC37"
     val zioTestContainers     = "0.10.0"
   }
 
