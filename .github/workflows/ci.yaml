@@ -25,6 +25,8 @@ jobs:
           uses: sbt/setup-sbt@v1      
         - name: Cache SBT
           uses: actions/cache@v2
+          env:
+            ACTIONS_STEP_DEBUG: true
           with:
               path: |
                     ~/.ivy2/cache
