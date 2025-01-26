@@ -31,6 +31,8 @@ jobs:
                     ~/.ivy2/local
                     ~/.sbt
                     ~/.coursier
+                    ~/.cache/coursier
+                    ~/.cache/ivy2
               key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt', 'project/*.scala', 'project/*.sbt') }}
               restore-keys: |
                     ${{ runner.os }}-sbt-
