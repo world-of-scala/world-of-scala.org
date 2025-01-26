@@ -7,15 +7,12 @@ set -e
 #
 . ./scripts/env.sh
 
-if [ ! -e $BUILD_ENV_FILE ]; then
-    echo "Waiting for $BUILD_ENV_FILE to be generated..."
+if [ ! -e \$BUILD_ENV_FILE ]; then
+    echo "Waiting for \$BUILD_ENV_FILE to be generated..."
     echo '  Import the project !!!'
     echo
 
-    until [ -e $BUILD_ENV_FILE ]; do
-        echo -n "."
-        sleep 4
-    done
+    sbt projects # Will generate the BUILD_ENV_FILE file
 
     echo
     echo
@@ -23,7 +20,6 @@ if [ ! -e $BUILD_ENV_FILE ]; then
     echo
 
 fi
-
 . $BUILD_ENV_FILE
 
 rm -f $MAIN_JS_FILE
