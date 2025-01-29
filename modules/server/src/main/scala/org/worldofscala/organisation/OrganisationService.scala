@@ -6,6 +6,7 @@ import zio.stream.*
 import io.scalaland.chimney.dsl._
 import zio.stream.ZStream
 import org.worldofscala.user.User
+import org.worldofscala.earth.Mesh
 
 trait OrganisationService {
   def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation]
@@ -47,7 +48,7 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
         createdBy = userUUID,
         name = organisation.name,
         location = organisation.location,
-        meshId = Some(organisation.meshId)
+        meshId = Some(organisation.meshId).filterNot(_ == Mesh.default)
       )
 
     organisationRepository

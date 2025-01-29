@@ -12,7 +12,9 @@ final case class Mesh(id: Mesh.Id, label: String, blob: Array[Byte]) derives Jso
 
 object Mesh:
 
-  val default = Mesh.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
+  def default = Mesh.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
+
+  def defaulEntry = (default, "Scala", None, 0L)
 
   opaque type Id <: UUID = UUID
 
