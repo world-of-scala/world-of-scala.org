@@ -37,6 +37,7 @@ This is a full stack Scala project, using Scala.js for the client and ZIO for th
 - JDK
 - sbt
 - Node.js
+- Docker running
 
 Decent vesions of JDK, sbt and Node.js are required.
 

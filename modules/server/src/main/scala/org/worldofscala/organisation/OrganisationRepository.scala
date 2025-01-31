@@ -1,15 +1,16 @@
 package org.worldofscala.organisation
 
 import io.getquill.jdbczio.Quill
-import io.getquill.SnakeCase
 import org.worldofscala.*
 import io.getquill.*
 import io.scalaland.chimney.dsl.*
 
 import zio.*
-import zio.json.*
 import zio.stream.ZStream
 import org.worldofscala.repositories.PGpointSupport
+import java.util.UUID
+import org.worldofscala.user.UserRepository
+import org.worldofscala.earth.Mesh
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]
@@ -22,13 +23,25 @@ class OrganisationRepositoryLive private (val quill: Quill.Postgres[SnakeCase])
     with PGpointSupport {
   import quill.*
 
+  given MappedEncoding[Organisation.Id, UUID] =
+    MappedEncoding[Organisation.Id, UUID](identity)
+  given MappedEncoding[UUID, Organisation.Id] =
+    MappedEncoding[UUID, Organisation.Id](Organisation.Id.apply)
+
+  given midEnc: MappedEncoding[Mesh.Id, UUID] =
+    MappedEncoding[Mesh.Id, UUID](identity)
+  given miDec: MappedEncoding[UUID, Mesh.Id] =
+    MappedEncoding[UUID, Mesh.Id](Mesh.Id.apply)
+
+  import UserRepository.given
+
   override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =
     stream(query[OrganisationEntity])
 
   inline given SchemaMeta[NewOrganisationEntity] = schemaMeta[NewOrganisationEntity]("organisations")
   inline given InsertMeta[NewOrganisationEntity] = insertMeta[NewOrganisationEntity](_.id, _.creationDate)
   inline given SchemaMeta[OrganisationEntity]    = schemaMeta[OrganisationEntity]("organisations")
-  inline given UpdateMeta[OrganisationEntity]    = updateMeta[OrganisationEntity](_.id, _.creationDate)
+  inline given UpdateMeta[OrganisationEntity]    = updateMeta[OrganisationEntity](_.id, _.creationDate, _.createdBy)
 
   override def create(user: NewOrganisationEntity): Task[OrganisationEntity] =
     run(query[NewOrganisationEntity].insertValue(lift(user)).returning(r => r))

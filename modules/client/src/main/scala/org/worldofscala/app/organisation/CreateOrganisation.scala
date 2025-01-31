@@ -9,6 +9,9 @@ import dev.cheleb.scalamigen.*
 import dev.cheleb.ziotapir.laminar.*
 
 import org.worldofscala.app.given
+import org.worldofscala.app.Router
+import org.worldofscala.earth.Mesh
+import org.worldofscala.earth.MeshEndpoint
 
 object CreateOrganisation:
 
@@ -36,14 +39,21 @@ object CreateOrganisation:
 
   def apply() =
     val organisationVar = Var(
-      NewOrganisation("", LatLon.empty)
+      NewOrganisation("", LatLon.empty, Mesh.default)
     )
+    val meshes = EventBus[List[(Mesh.Id, String, Option[String], Long)]]()
 
     div(
+      onMountCallback { _ =>
+        MeshEndpoint.all(()).emitTo(meshes)
+      },
       h1("Create  Organisation"),
       div(
         styleAttr := "float: left;",
-        organisationVar.asForm,
+        child <-- meshes.events.toSignal(Nil).map { meshes =>
+          given Form[Mesh.Id] = selectMappedForm(meshes, m => m._1, m => m._2)
+          organisationVar.asForm
+        },
         children <-- organisationVar.signal.map {
           _.errorMessages.map(div(_)).toSeq
         }
@@ -64,7 +74,8 @@ object CreateOrganisation:
 
           }
         )
-      )
+      ),
+      a(href := Router.uiRoute("organisation/mesh/new"), "New mesh")
 //      renderToast(organisationBus, errorBus)
     )
 

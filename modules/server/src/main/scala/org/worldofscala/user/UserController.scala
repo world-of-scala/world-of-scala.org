@@ -4,12 +4,9 @@ import dev.cheleb.ziotapir.SecuredBaseController
 
 import zio.*
 
-import sttp.model.Uri
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
-import sttp.capabilities.zio.ZioStreams
 
-import org.worldofscala.domain.errors.NotHostHeaderException
 import org.worldofscala.auth.*
 
 class UserController private (personService: UserService, jwtService: JWTService)

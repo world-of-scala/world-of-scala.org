@@ -1,7 +1,6 @@
 package org.worldofscala.config
 
 import zio.Config
-import zio.Duration
 import zio.config.magnolia.deriveConfig
 import zio.ZLayer
 

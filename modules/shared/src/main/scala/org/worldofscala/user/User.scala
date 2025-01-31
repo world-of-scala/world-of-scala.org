@@ -6,7 +6,6 @@ import java.time.ZonedDateTime
 import java.util.UUID
 import zio.prelude.*
 import zio.prelude.Debug.Repr
-import zio.prelude.Debug.Renderer
 import zio.prelude.magnolia.*
 
 import dev.cheleb.scalamigen.NoPanel
@@ -39,7 +38,7 @@ object Password:
   def apply(password: String): Password = password
 
 case class User(
-  id: UUID,
+  id: User.Id,
   firstname: String,
   lastname: String,
   email: String,
@@ -48,4 +47,19 @@ case class User(
 ) derives JsonCodec,
       Schema
 
-case class UserID(id: UUID, email: String) derives JsonCodec, Schema
+object User:
+
+  opaque type Id <: UUID = UUID
+  object Id:
+    def apply(uuid: UUID): Id         = uuid
+    def unapply(id: Id): Option[UUID] = Some(id)
+
+//    extension (id: Id) def value: UUID = id
+
+    given JsonCodec[Id] = JsonCodec.uuid
+    given Schema[Id]    = Schema.schemaForUUID
+
+    given Debug[Id] with
+      def debug(value: Id): Repr = Repr.String(value.toString)
+
+case class UserID(id: User.Id, email: String) derives JsonCodec, Schema

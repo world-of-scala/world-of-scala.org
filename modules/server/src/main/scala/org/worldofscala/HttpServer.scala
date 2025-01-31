@@ -13,14 +13,15 @@ import sttp.tapir.server.interceptor.cors.CORSInterceptor
 
 import org.worldofscala.observability.*
 import org.worldofscala.services.*
-import org.worldofscala.repositories.*
 import org.worldofscala.user.UserRepositoryLive
 import org.worldofscala.user.UserServiceLive
 import org.worldofscala.auth.JWTServiceLive
 import org.worldofscala.organisation.*
-import org.worldofscala.auth.JWTService
+
 import org.worldofscala.user.UserService
 import org.worldofscala.config.*
+import org.worldofscala.earth.MeshServiceLive
+import org.worldofscala.earth.MeshRepositoryLive
 
 object HttpServer extends ZIOAppDefault {
 
@@ -39,35 +40,26 @@ object HttpServer extends ZIOAppDefault {
       )
       .options
 
-  private def server =
-    for {
+  private def server = for {
+    apiEndpoints <- HttpApi.endpoints
+    docEndpoints = SwaggerInterpreter()
+                     .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
+    _ <- Server.serve(
+           Routes(
+             Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
+           ) ++
+             ZioHttpInterpreter(serverOptions)
+               .toHttp(metricsEndpoint :: webJarRoutes :: apiEndpoints ::: docEndpoints)
+         ) <* Console.printLine("Server started !")
+  } yield ()
 
-      apiEndpoints <- HttpApi.endpoints
-      // streamingEndpoints <- HttpApi.streamingEndpointsZIO
-      docEndpoints = SwaggerInterpreter()
-                       .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
+  private val program = for {
+    _            <- FlywayService.runMigrations
+    serverConfig <- ZIO.service[ServerConfig]
+    _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
 
-      _ <- Server.serve(
-             Routes(
-               Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
-             ) ++
-               ZioHttpInterpreter(serverOptions)
-                 .toHttp(metricsEndpoint :: webJarRoutes :: apiEndpoints ::: docEndpoints)
-           ) <* Console.printLine("Server started !")
-    } yield ()
-
-  private val program
-    : ZIO[FlywayService & ServerConfig & UserService & JWTService & OrganisationService, Throwable, Unit] =
-    for {
-      _            <- FlywayService.runMigrations
-      serverConfig <- ZIO.service[ServerConfig]
-      _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
-
-      _ <- server.provideSomeLayer(serverLayer(serverConfig))
-    } yield ()
-
-  private def serverLayer(serverConfig: ServerConfig): TaskLayer[Server] =
-    Server.defaultWithPort(serverConfig.port)
+    _ <- server.provideSomeLayer(Server.defaultWithPort(serverConfig.port))
+  } yield ()
 
   override def run =
     program
@@ -76,11 +68,13 @@ object HttpServer extends ZIOAppDefault {
         // Service layers
         UserServiceLive.layer,
         OrganisationServiceLive.layer,
+        MeshServiceLive.layer,
         FlywayServiceLive.configuredLayer,
         JWTServiceLive.configuredLayer,
         // Repository layers
         UserRepositoryLive.layer,
         OrganisationRepositoryLive.layer,
+        MeshRepositoryLive.layer,
         Repository.dataLayer
         // ,ZLayer.Debug.mermaid
       )

@@ -1,4 +1,4 @@
-package org.worldofscala.app.world
+package dev.cheleb.threescalajs
 
 import typings.three.mod.*
 import scalajs.js.JSConverters.*

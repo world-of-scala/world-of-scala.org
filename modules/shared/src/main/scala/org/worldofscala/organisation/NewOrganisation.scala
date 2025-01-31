@@ -1,7 +1,6 @@
 package org.worldofscala.organisation
 
 import java.util.UUID
-import java.time.ZonedDateTime
 
 import sttp.tapir.Schema
 import zio.json.JsonCodec
@@ -11,11 +10,14 @@ import zio.prelude.magnolia.*
 import dev.cheleb.scalamigen.NoPanel
 import zio.prelude.Debug.Repr
 import Math.{PI, cos, sin}
+import org.worldofscala.user.User
+import org.worldofscala.earth.Mesh
 
 @NoPanel
 case class NewOrganisation(
   name: String,
-  location: LatLon
+  location: LatLon,
+  meshId: Mesh.Id
 ) derives JsonCodec,
       Schema,
       Debug:
@@ -49,9 +51,11 @@ object LatLon:
   val empty: LatLon = LatLon(0.0, 0.0)
 
 case class Organisation(
-  id: UUID,
+  id: Organisation.Id,
+  createdBy: User.Id,
   name: String,
-  location: LatLon
+  location: LatLon,
+  meshId: Option[Mesh.Id]
 ) derives JsonCodec,
       Schema,
       Debug:
@@ -60,3 +64,15 @@ case class Organisation(
 object Organisation:
   given Debug[UUID] with
     def debug(value: UUID): Repr = Repr.String(value.toString)
+
+  opaque type Id <: UUID = UUID
+
+  object Id:
+    inline def apply(uuid: UUID): Id  = uuid
+    def unapply(id: Id): Option[UUID] = Some(id)
+
+    given JsonCodec[Id] = JsonCodec.uuid
+    given Schema[Id]    = Schema.schemaForUUID
+
+object Test:
+  val id = Organisation.Id(UUID.randomUUID())

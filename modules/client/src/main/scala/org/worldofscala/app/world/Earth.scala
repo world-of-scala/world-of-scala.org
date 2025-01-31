@@ -2,6 +2,8 @@ package org.worldofscala.app.world
 
 import org.scalajs.dom.window
 
+import dev.cheleb.threescalajs.{*, given}
+
 import com.raquo.laminar.api.L.*
 
 import typings.webxr.*
@@ -22,6 +24,7 @@ import org.worldofscala.organisation.Organisation
 import org.worldofscala.organisation.OrganisationEndpoint
 import zio.ZIO
 import org.worldofscala.organisation.LatLon
+import dev.cheleb.ziotapir.SameOriginBackendClientLive
 
 object Earth {
 
@@ -32,7 +35,7 @@ object Earth {
     val eartthDiv = div()
 
     val scene  = new Scene();
-    val camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    val camera = new PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 100);
 
     camera.position.set(0, 0, 5)
 
@@ -43,7 +46,7 @@ object Earth {
     );
 
     renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(window.innerWidth * 0.88, window.innerHeight * .88);
+    renderer.setSize(window.innerWidth * .88, window.innerHeight * .88);
 
     val orbitControl = OrbitControls(camera, renderer.domElement)
 
@@ -98,19 +101,35 @@ object Earth {
 
     eartthDiv.amend(
       onMountCallback { _ =>
-        loader.load(
-          "/public/res/pinner.glb",
-          (obj) => {
-
-            OrganisationEndpoint
-              .allStream(())
-              .jsonl[Organisation, Unit] { organisation =>
-                ZIO
-                ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}") *>
-                  ZIO.attempt(addObj(obj, organisation.location))
-              }
+        OrganisationEndpoint
+          .allStream(())
+          .jsonl[Organisation, Unit] { organisation =>
+            val meshIO: ZIO[Any, Any, GLTF] = organisation.meshId match {
+              case Some(meshId) =>
+                ZIO.async { callback =>
+                  loader.load(
+                    SameOriginBackendClientLive.backendBaseURL.addPath("api", "mesh", meshId.toString()).toString,
+                    (obj) => {
+                      callback(ZIO.succeed(obj))
+                    }
+                  )
+                }
+              case None =>
+                ZIO.async { callback =>
+                  loader.load(
+                    s"/public/res/pinner.glb",
+                    (obj) => {
+                      callback(ZIO.succeed(obj))
+                    }
+                  )
+                }
+            }
+            (for {
+              obj <- meshIO
+              _   <- ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}")
+              _   <- ZIO.attempt(addObj(obj, organisation.location))
+            } yield ()).ignore
           }
-        )
       }
     )
 
