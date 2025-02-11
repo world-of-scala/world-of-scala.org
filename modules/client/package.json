@@ -16,7 +16,7 @@
     "@ui5/webcomponents-fiori": "2.7.2",
     "@ui5/webcomponents-icons": "2.7.2",
     "@ui5/webcomponents-compat": "2.7.2",
-    "chart.js": "2.9.4",
+    "chart.js": "4.4.7",
     "three": "0.170.0"
   },
   "devDependencies": {
