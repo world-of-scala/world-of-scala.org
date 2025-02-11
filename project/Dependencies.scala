@@ -4,8 +4,8 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
   val Versions = new {
-    val chimney               = "1.7.0"
-    val flywaydb              = "11.2.0"
+    val chimney               = "1.7.1"
+    val flywaydb              = "11.3.0"
     val frontroute            = "0.19.0"
     val iron                  = "2.6.0"
     val javaMail              = "1.6.2"
@@ -51,7 +51,7 @@ object Dependencies {
   )
 
   private val jwtDependencies = Seq(
-    "com.auth0" % "java-jwt" % "4.4.0"
+    "com.auth0" % "java-jwt" % "4.5.0"
   )
 
   val serverLibraryDependencies =
