@@ -23,12 +23,12 @@ class MeshController private (meshService: MeshService, jwtService: JWTService)
   }
 
   val createStream: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.streamCreate.zServerAuthenticatedLogic {
-    userId => (name, stream) =>
+    _ => (name, stream) =>
       meshService.createStream(name, stream)
   }
 
   val putThumbnail: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.putThumbnail.zServerAuthenticatedLogic {
-    userId => (name, thumbnail) =>
+    _ => (name, thumbnail) =>
       meshService.updateThumnail(name, thumbnail)
   }
 

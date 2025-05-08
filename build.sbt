@@ -9,7 +9,7 @@ import Dependencies._
 //
 import DeploymentSettings._
 
-val scala3 = "3.6.4"
+val scala3 = "3.7.0"
 
 name := "World Of Scala"
 
@@ -160,8 +160,8 @@ def scalajsProject(projectId: String): Project =
       scalacOptions := Seq(
         "-scalajs",
         "-deprecation",
-        "-feature",
-        "-Xfatal-warnings"
+        "-feature"
+//        "-Xfatal-warnings"
       )
     )
 

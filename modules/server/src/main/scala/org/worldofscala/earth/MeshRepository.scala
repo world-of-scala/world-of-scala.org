@@ -50,7 +50,7 @@ class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends 
       organisations <- query[OrganisationEntity]
                          .leftJoin(org => org.meshId == Some(meshes.id))
                          .groupBy(o => (meshes.id, meshes.label, meshes.thumbnail, o.map(_.meshId)))
-                         .map { case (mesh, orgs) =>
+                         .map { case (_, orgs) =>
                            orgs.size
                          }
 

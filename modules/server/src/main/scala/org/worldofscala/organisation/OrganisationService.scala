@@ -2,8 +2,8 @@ package org.worldofscala.organisation
 
 import zio.*
 import zio.json.*
-import zio.stream.*
-import io.scalaland.chimney.dsl._
+
+import io.scalaland.chimney.dsl.*
 import zio.stream.ZStream
 import org.worldofscala.user.User
 import org.worldofscala.earth.Mesh
