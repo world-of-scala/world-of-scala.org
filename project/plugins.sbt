@@ -25,4 +25,4 @@ addSbtPlugin("org.scalablytyped.converter" % "sbt-converter" % "1.0.0-beta44")
 // Giter8 support
 addSbtPlugin("org.foundweekends.giter8" % "sbt-giter8-scaffold" % "0.17.0")
 // Scalafix
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.0")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.3")
