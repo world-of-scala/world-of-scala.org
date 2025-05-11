@@ -6,7 +6,6 @@ import io.scalaland.chimney.dsl._
 import java.time.ZonedDateTime
 
 import org.worldofscala.auth.*
-import org.worldofscala.domain.*
 
 import org.worldofscala.repositories.TransactionSupport
 
