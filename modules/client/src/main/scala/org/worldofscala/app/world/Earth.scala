@@ -2,29 +2,21 @@ package org.worldofscala.app.world
 
 import org.scalajs.dom.window
 
-import dev.cheleb.threescalajs.{*, given}
+import THREE.*
 
 import com.raquo.laminar.api.L.*
 
-import typings.webxr.*
-import typings.three.mod.*
 import dev.cheleb.ziotapir.laminar.*
 
-import typings.three.srcMaterialsMeshBasicMaterialMod.MeshBasicMaterialParameters
-import typings.three.srcMaterialsPointsMaterialMod.PointsMaterialParameters
-import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
-import typings.three.examplesJsmAddonsMod.OrbitControls
-import typings.three.examplesJsmAddonsMod.GLTFLoader
-
 import scala.scalajs.js.Math.PI
-import typings.three.srcMaterialsLineBasicMaterialMod.LineBasicMaterialParameters
-import typings.three.examplesJsmLoadersGltfloaderMod.GLTF
 
 import org.worldofscala.organisation.Organisation
 import org.worldofscala.organisation.OrganisationEndpoint
 import zio.ZIO
 import org.worldofscala.organisation.LatLon
 import dev.cheleb.ziotapir.SameOriginBackendClientLive
+
+import org.worldofscala.app.world.SceneHelper.*
 
 object Earth {
 
@@ -39,11 +31,10 @@ object Earth {
 
     camera.position.set(0, 0, 5)
 
-    val renderer = new WebGLRenderer(
-      WebGLRendererParameters()
-        .setAntialias(true)
-        .setAlpha(false)
-    );
+    val renderer = WebGLRenderer(
+      antialias = true,
+      alpha = false
+    )
 
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth * .88, window.innerHeight * .88);
@@ -59,36 +50,33 @@ object Earth {
 
     val colorMap = textureLoader.load("/public/img/8081-earthmap10k.jpg")
 
-    val material = new MeshBasicMaterial(
-      MeshBasicMaterialParameters()
-        .setColor(0x202020)
-        .setWireframe(false)
-        .setAlphaToCoverage(true)
-    );
+    val material = MeshBasicMaterial(
+      color = 0x555555,
+      wireframe = true
+    )
 
-    val globeGroup: MeshObject3D = Group()
+    val globeGroup = Group()
 
-    val earth: MeshObject3D = new Mesh(geometry, material);
+    val earth = new Mesh(geometry, material);
 
     globeGroup.add(earth)
 
     val pointMaterial = PointsMaterial(
-      PointsMaterialParameters()
-        .setColor(0xf0f0f0)
-        .setSize(0.02)
-        .setMap(colorMap)
+      color = 0xf0f0f0,
+      size = 0.02,
+      map = colorMap
     )
-    val points: MeshObject3D = Points(pointGeometry, pointMaterial)
+    val points = Points(pointGeometry, pointMaterial)
 
     globeGroup.add(points)
 
-    def addObj(obj: GLTF, location: LatLon) =
-      val pinner    = obj.scene.clone(true)
+    def addObj(obj: GLTFResult, location: LatLon) =
+      val pinner    = obj.scene.jsClone(true)
       val (x, y, z) = location.xyz(R + 0.02)
       pinner.position.set(x, y, z)
       pinner.lookAt(0, 0, 0)
       globeGroup.add(pinner)
-      globeGroup.add(drawLine(x * 1.2, y * 1.2, z * 1.2))
+      globeGroup.add(drawLine(x, y, z))
 
     val loader = new GLTFLoader()
 
@@ -104,7 +92,7 @@ object Earth {
         OrganisationEndpoint
           .allStream(())
           .jsonl[Organisation, Unit] { organisation =>
-            val meshIO: ZIO[Any, Any, GLTF] = organisation.meshId match {
+            val meshIO: ZIO[Any, Any, GLTFResult] = organisation.meshId match {
               case Some(meshId) =>
                 ZIO.async { callback =>
                   loader.load(
@@ -140,7 +128,7 @@ object Earth {
     globeGroup.rotation.y = PI / 2
     globeGroup.rotation.x = PI / 4
 
-    val animate: XRFrameRequestCallback = (_, _) => {
+    val animate: () => Unit = () => {
 
       // globeGroup.rotation.x += 0.001;
       globeGroup.rotation.y += 0.0005;
@@ -160,18 +148,5 @@ object Earth {
     eartthDiv.ref.append(renderer.domElement)
 
     eartthDiv
-
-  def drawLine(
-    x: Double,
-    y: Double,
-    z: Double
-  ) = {
-    val material = new LineBasicMaterial(LineBasicMaterialParameters().setColor(0x0000ff))
-    val geometry = new BufferGeometry().setFromPoints(
-      points((0, 0, 0), (x, y, z))
-    );
-    val line: Line[BufferGeometry[Nothing], LineBasicMaterial, Nothing] = new Line(geometry, material);
-    line
-  }
 
 }

@@ -9,8 +9,6 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-import org.scalablytyped.converter.plugin._
-import org.scalablytyped.converter.plugin.STKeys._
 import org.scalajs.sbtplugin._
 
 import play.twirl.sbt.SbtTwirl
@@ -126,32 +124,6 @@ object DeploymentSettings {
       )
     case _ =>
       Seq()
-  }
-  //
-  // ScalablyTyped settings
-  //
-  val scalablyTypedPlugin = mode match {
-    case "CommonJs" => ScalablyTypedConverterPlugin
-    case _          => ScalablyTypedConverterExternalNpmPlugin
-  }
-
-  val scalablytypedSettings = mode match {
-    case "CommonJs" =>
-      Seq(
-        Compile / npmDependencies ++= Seq(
-          "chart.js"        -> "2.9.4",
-          "@types/chart.js" -> "2.9.41",
-          "three"           -> "0.170.0",
-          "@types/three"    -> "0.170.0"
-        ),
-        webpack / version      := "5.96.1",
-        scalaJSStage in Global := FullOptStage,
-        webpackBundlingMode    := BundlingMode.LibraryAndApplication()
-      )
-    case _ =>
-      Seq(externalNpm := {
-        baseDirectory.value / "scalablytyped"
-      })
   }
 
   def nexusNpmSettings =

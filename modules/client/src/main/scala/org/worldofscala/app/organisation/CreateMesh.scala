@@ -13,16 +13,12 @@ import org.worldofscala.app.session
 
 import scala.scalajs.js.typedarray.*
 
-import typings.webxr.*
-import typings.three.mod.*
-import typings.three.srcRenderersWebGLRendererMod.WebGLRendererParameters
-import typings.three.examplesJsmAddonsMod.OrbitControls
-import dev.cheleb.threescalajs.given
-import typings.three.examplesJsmAddonsMod.GLTFLoader
 import be.doeraene.webcomponents.ui5.*
 import be.doeraene.webcomponents.ui5.configkeys.*
 
 import org.worldofscala.earth.Mesh as OrgaMesh
+
+import THREE.*
 
 object CreateMesh:
 
@@ -96,12 +92,11 @@ object CreateMesh:
   def preview(fileOption: Option[org.scalajs.dom.File]) = fileOption match {
     case Some(file) =>
       val loader = new GLTFLoader()
-      val renderer = new WebGLRenderer(
-        WebGLRendererParameters()
-          .setPreserveDrawingBuffer(true)
-          .setAntialias(true)
-          .setAlpha(false)
-      );
+      val renderer = WebGLRenderer(
+        preserveDrawingBuffer = true,
+        antialias = true,
+        alpha = false
+      )
 
       var rotateX = 0.01d
       var rotateY = 0.01d
@@ -130,7 +125,7 @@ object CreateMesh:
 
       val orbitControl = OrbitControls(camera, renderer.domElement)
 
-      val animate: XRFrameRequestCallback = (_, _) => {
+      val animate: () => Unit = () => {
 
         scene.rotation.x += rotateX;
         scene.rotation.y += rotateY;
@@ -142,13 +137,13 @@ object CreateMesh:
 
       renderer.setAnimationLoop(animate);
 
-      val light        = DirectionalLight(0xffffff, 100)
-      val ambientLight = AmbientLight(0xffffff, 100)
+      val light = DirectionalLight(0xffffff, 100)
+//      val ambientLight = AmbientLight(0xffffff, 100)
 
       light.position.set(5, 5, 5)
       light.lookAt(0, 0, 0)
       scene.add(light)
-      scene.add(ambientLight)
+      //    scene.add(ambientLight)
 
       val canvas = renderer.domElement
 
@@ -169,7 +164,7 @@ object CreateMesh:
           buffer,
           "",
           (gltf) => {
-            scene.add(gltf.scene.clone(true))
+            scene.add(gltf.scene.jsClone(true))
           }
         )
       }

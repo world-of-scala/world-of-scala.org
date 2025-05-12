@@ -42,9 +42,6 @@ object Router:
                   }
                 )
               },
-              path("demos" / "scalablytyped") {
-                stats.ScalablytypedDemoPage()
-              },
               path("about") {
                 HomePage()
               }
