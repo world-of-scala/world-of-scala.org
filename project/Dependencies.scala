@@ -17,8 +17,8 @@ object Dependencies {
     val quill                 = "4.8.6"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.17"
-    val tapir                 = "1.11.29"
-    val zio                   = "2.1.17"
+    val threesjs              = "0.0.1"
+    val zio                   = "2.1.14"
     val zioConfig             = "4.0.3"
     val zioLaminarTapir       = "1.1.0"
     val zioLogging            = "2.2.4"
@@ -100,7 +100,8 @@ object Dependencies {
       "dev.cheleb" %%% "laminar-form-derivation-ui5" % Versions.laminarFormDerivation,
       // pull tapir-sttp-client and zio-tapir
       "dev.cheleb"    %%% "zio-tapir-laminar" % Versions.zioLaminarTapir,
-      "io.frontroute" %%% "frontroute"        % Versions.frontroute
+      "io.frontroute" %%% "frontroute"        % Versions.frontroute,
+      "dev.cheleb"    %%% "threesjs"          % Versions.threesjs
     )
 
   val clientAndServerLibraries = Seq(
