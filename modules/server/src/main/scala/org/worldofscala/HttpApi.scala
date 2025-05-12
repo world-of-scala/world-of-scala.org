@@ -32,6 +32,7 @@ object HttpApi extends Routes {
     : URIO[UserService & JWTService & OrganisationService & MeshService, List[ServerEndpoint[ZioStreams, Task]]] =
     makeControllers.map(gatherRoutes(_.streamRoutes))
 
+  // TODO memoize this
   def endpoints = for {
     endpoints       <- endpointsZIO
     streamEndpoints <- streamEndpointsZIO
