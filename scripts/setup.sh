@@ -57,12 +57,6 @@ pushd modules/shared/.js
 npmInstall
 popd
 
-#
-# Generating scalablytyped
-#
-pushd modules/client/scalablytyped
-npmInstall
-popd
 
 echo "Generating Scala.js bindings..."
 sbt -mem 8192 compile

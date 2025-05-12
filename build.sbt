@@ -95,18 +95,10 @@ val usedScalacOptions = Seq(
 // It depends on sharedJs project, a project that contains shared code between server and client.
 //
 lazy val client = scalajsProject("client")
-  .enablePlugins(scalablyTypedPlugin)
   .settings(
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= { config =>
       mode match {
-        case "CommonJs" =>
-          config
-            .withModuleKind(scalaJSModule)
-            .withMinify(true)
-            .withOptimizer(true)
-            .withClosureCompiler(true)
-
         case "ESModule" =>
           config
             .withModuleKind(scalaJSModule)
@@ -120,9 +112,6 @@ lazy val client = scalajsProject("client")
   )
   .settings(scalacOptions ++= usedScalacOptions)
   .settings(clientLibraryDependencies)
-  .settings(
-    scalablytypedSettings
-  )
   .dependsOn(sharedJs)
   .settings(
     publish / skip := true
