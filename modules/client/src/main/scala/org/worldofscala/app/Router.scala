@@ -50,9 +50,8 @@ object Router:
               }
             )
           },
-          noneMatched {
+          noneMatched:
             div("404 Not Found")
-          }
         )
       )
     )

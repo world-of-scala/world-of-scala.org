@@ -134,7 +134,7 @@ lazy val client = scalajsProject("client")
 //
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
-  .disablePlugins(RevolverPlugin)
+  // .disablePlugins(RevolverPlugin)
   .in(file("modules/shared"))
   .settings(
     sharedJvmAndJsLibraryDependencies
