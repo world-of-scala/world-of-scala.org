@@ -61,7 +61,7 @@ object HttpServer extends ZIOAppDefault {
     _ <- server.provideSomeLayer(Server.defaultWithPort(serverConfig.port))
   } yield ()
 
-  override def run =
+  override def run: Task[Unit] =
     program
       .provide(
         ServerConfig.layer,
@@ -76,6 +76,6 @@ object HttpServer extends ZIOAppDefault {
         OrganisationRepositoryLive.layer,
         MeshRepositoryLive.layer,
         Repository.dataLayer
-        // ,ZLayer.Debug.mermaid
+        // , ZLayer.Debug.mermaid
       )
 }
