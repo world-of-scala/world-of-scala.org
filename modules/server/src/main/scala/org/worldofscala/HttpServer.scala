@@ -58,7 +58,7 @@ object HttpServer extends ZIOAppDefault {
     serverConfig <- ZIO.service[ServerConfig]
     _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
 
-    _ <- server.provideSomeLayer(Server.defaultWithPort(serverConfig.port))
+    _ <- server.provideSomeLayer(Server.defaultWith(config => config.binding("0.0.0.0", serverConfig.port)))
   } yield ()
 
   override def run: Task[Unit] =
