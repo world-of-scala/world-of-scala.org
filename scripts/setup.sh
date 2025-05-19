@@ -52,11 +52,3 @@ popd() {
 pushd modules/client
 npmInstall
 popd
-
-pushd modules/shared/.js
-npmInstall
-popd
-
-
-echo "Generating Scala.js bindings..."
-sbt -mem 8192 compile
