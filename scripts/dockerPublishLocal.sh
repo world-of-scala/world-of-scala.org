@@ -3,6 +3,6 @@ set -e
 # Import the project environment variables
 . ./scripts/env.sh
 
-. ./scripts/setup-noninteractive.sh
+./scripts/setup.sh
 
-MOD=$BUILD_MOD sbt "${BUILD_CLEAN}server/Docker/publishLocal"
+MOD=Docker sbt "server/Docker/publishLocal"

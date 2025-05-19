@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-. ./scripts/env.sh -d
+. ./scripts/env.sh
 
 . $BUILD_ENV_FILE
 

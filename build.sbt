@@ -64,7 +64,7 @@ lazy val server = project
     serverLibraryDependencies,
     testingLibraryDependencies
   )
-  .settings(serverSettings(client): _*)
+  .settings(dockerSettings: _*)
   .dependsOn(sharedJvm)
   .settings(
     publish / skip := true
@@ -113,6 +113,11 @@ lazy val client = scalajsProject("client")
 //
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
+  .enablePlugins(BuildInfoPlugin)
+  .settings(
+    buildInfoKeys    := Seq[BuildInfoKey](version, scalaVersion, sbtVersion),
+    buildInfoPackage := "org.worldofscala"
+  )
   // .disablePlugins(RevolverPlugin)
   .in(file("modules/shared"))
   .settings(
@@ -122,7 +127,8 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
     publish / skip := true
   )
 lazy val sharedJvm = shared.jvm
-lazy val sharedJs  = shared.js
+
+lazy val sharedJs = shared.js
 
 Test / fork := false
 

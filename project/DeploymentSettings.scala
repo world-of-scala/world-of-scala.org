@@ -21,23 +21,22 @@ import scalajsbundler.sbtplugin.WebScalaJSBundlerPlugin
 import scalajsbundler.sbtplugin.ScalaJSBundlerPlugin.autoImport._
 
 import webscalajs.WebScalaJS.autoImport._
+import scala.util.control.NoStackTrace
+
+class NoVersionException extends RuntimeException("VERSION env variable not set") with NoStackTrace
 
 object DeploymentSettings {
 //
 // Define the build mode:
-// - CommonJs: production mode, aka with BFF and webjar deployment
-//         optimized, CommonJSModule
-//         webjar packaging
-// - ESModule: demo mode (default)
-//         optimized, CommonJSModule
-//         static files
+// - FullStack: production mode, aka with BFF and webjar deployment
+// - Docker:    production mode, aka with BFF and webjar deployment
 // - dev:  development mode
 //         no optimization, ESModule
 //         static files, hot reload with vite.
 //
-// Default is "demo" mode, because the vite build does not take parameters.
+// Default is "dev" mode, because the vite build does not take parameters.
 //   (see vite.config.js)
-  val mode = sys.env.get("MOD").getOrElse("ESModule")
+  val mode = sys.env.getOrElse("MOD", "dev")
 
   val overrideDockerRegistry = sys.env.get("LOCAL_DOCKER_REGISTRY").isDefined
 
@@ -47,13 +46,8 @@ object DeploymentSettings {
 // On dev mode, server will only serve API and static files.
 //
 
-  def serverSettings(clientProjects: Project*) = mode match {
-    case "ESModule" => dockerSettings
-    case _          => Seq()
-  }
-
   def staticGenerationSettings(client: Project) = mode match {
-    case "ESModule" =>
+    case "FullStack" | "Docker" =>
       Seq(
         (Compile / resourceGenerators) += Def
           .taskDyn[Seq[File]] {
@@ -128,26 +122,31 @@ object DeploymentSettings {
 
   }
 
-  lazy val dockerSettings = {
-    import DockerPlugin.autoImport._
-    import DockerPlugin.globalSettings._
-    import sbt.Keys._
-    Seq(
-      Docker / maintainer     := "Joh doe",
-      Docker / dockerUsername := Some("cheleb"),
-      Docker / packageName    := "world-of-scala",
-      dockerBaseImage         := "azul/zulu-openjdk-alpine:23-latest",
-      dockerUpdateLatest      := true,
-      dockerExposedPorts      := Seq(8000)
-    ) ++ (overrideDockerRegistry match {
-      case true =>
-        Seq(
-          Docker / dockerRepository := Some("registry.orb.local"),
-          Docker / dockerUsername   := Some("world-of-scala")
-        )
-      case false =>
-        Seq()
-    })
+  lazy val dockerSettings = mode match {
+    case "Docker" =>
+      import DockerPlugin.autoImport._
+      import DockerPlugin.globalSettings._
+      import sbt.Keys._
+      Seq(
+        Docker / maintainer     := "Joh doe",
+        Docker / dockerUsername := Some("cheleb"),
+        Docker / packageName    := "world-of-scala",
+        dockerBaseImage         := "azul/zulu-openjdk-alpine:23-latest",
+        dockerUpdateLatest      := true,
+        dockerExposedPorts      := Seq(8000)
+      ) ++ (overrideDockerRegistry match {
+        case true =>
+          Seq(
+            Docker / dockerRepository := Some("registry.orb.local"),
+            Docker / dockerUsername   := Some("world-of-scala")
+          ) :+ sys.env
+            .get("VERSION")
+            .map(v => ThisBuild / version := v)
+            .getOrElse(throw new NoVersionException)
+        case false =>
+          Seq()
+      })
+    case _ => Seq()
   }
 
 }

@@ -7,18 +7,12 @@ set -e
 #
 . ./scripts/env.sh
 
-if [ ! -e \$BUILD_ENV_FILE ]; then
-    echo "Waiting for \$BUILD_ENV_FILE to be generated..."
-    echo '  Import the project !!!'
+if [ ! -e $BUILD_ENV_FILE ]; then
+    echo "Generating $BUILD_ENV_FILE"
+    echo This file will store the Scala version.
     echo
 
     sbt projects # Will generate the BUILD_ENV_FILE file
-
-    echo
-    echo
-    echo " Good job 🚀"
-    echo
-
 fi
 . $BUILD_ENV_FILE
 

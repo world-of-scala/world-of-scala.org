@@ -80,7 +80,7 @@ object Header:
     UList(
       _.separators := ListSeparator.None,
       _.item(
-        _.icon             := IconName.settings,
+        _.icon := IconName.settings,
         a("Settings", href := Router.uiRoute("profile"), title := s" Logged in as ${userToken.email}")
       )
         .amend(
