@@ -37,7 +37,7 @@ object DeploymentSettings {
 //
 // Default is "demo" mode, because the vite build does not take parameters.
 //   (see vite.config.js)
-  val mode = sys.env.get("MOD").getOrElse("demo")
+  val mode = sys.env.get("MOD").getOrElse("ESModule")
 
   val overrideDockerRegistry = sys.env.get("LOCAL_DOCKER_REGISTRY").isDefined
 
@@ -46,54 +46,13 @@ object DeploymentSettings {
 //
 // On dev mode, server will only serve API and static files.
 //
-  val serverPlugins = mode match {
-    case "CommonJs" =>
-      Seq(SbtWeb, SbtTwirl, JavaAppPackaging, WebScalaJSBundlerPlugin, DockerPlugin, AshScriptPlugin)
-    case "ESModule" =>
-      Seq(SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
-    case _ => Seq()
-  }
-
-  def scalaJSModule = mode match {
-    case "CommonJs" => ModuleKind.CommonJSModule
-    case _          => ModuleKind.ESModule
-  }
 
   def serverSettings(clientProjects: Project*) = mode match {
-    case "CommonJs" =>
-      Seq(
-        Compile / compile              := ((Compile / compile) dependsOn scalaJSPipeline).value,
-        Assets / WebKeys.packagePrefix := s"$publicFolder/",
-        Runtime / managedClasspath += (Assets / packageBin).value,
-        scalaJSProjects         := clientProjects,
-        Assets / pipelineStages := Seq(scalaJSPipeline)
-      ) ++ dockerSettings
     case "ESModule" => dockerSettings
     case _          => Seq()
   }
 
-  def staticGenerationSettings(generator: Project, client: Project) = mode match {
-    case "CommonJs" =>
-      Seq(
-        Assets / resourceGenerators += Def
-          .taskDyn[Seq[File]] {
-            val rootFolder = (Assets / resourceManaged).value / publicFolder
-            rootFolder.mkdirs()
-            (generator / Compile / runMain).toTask {
-              Seq(
-                "samples.BuildIndex",
-                "--title",
-                s""""${name.value} v2 ${version.value}"""",
-                "--version",
-                version.value,
-                "--resource-managed",
-                rootFolder
-              ).mkString(" ", " ", "")
-            }
-              .map(_ => (rootFolder ** "*.html").get)
-          }
-          .taskValue
-      )
+  def staticGenerationSettings(client: Project) = mode match {
     case "ESModule" =>
       Seq(
         (Compile / resourceGenerators) += Def
@@ -136,18 +95,6 @@ object DeploymentSettings {
       )
       .toSeq
 
-  def scalaJSPlugin = mode match {
-    case "CommonJs" => ScalaJSBundlerPlugin
-    case _          => ScalaJSPlugin
-  }
-
-  def symlink(link: File, target: File): Unit = {
-    if (!(Files.exists(link.getParentFile.toPath)))
-      Files.createDirectories(link.getParentFile.toPath)
-    if (!(Files.exists(link.toPath) || Files.isSymbolicLink(link.toPath)))
-      if (Files.exists(target.toPath))
-        Files.createSymbolicLink(link.toPath, link.toPath.getParent.relativize(target.toPath))
-  }
   def insureBuildEnvFile(baseDirectory: File, scalaVersion: String) = {
 
     val outputFile = baseDirectory / "scripts" / "target" / "build-env.sh"

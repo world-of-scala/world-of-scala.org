@@ -33,22 +33,12 @@ inThisBuild(
 // This is static generation settings to be used in server project
 // Illustrate how to use the generator project to generate static files with twirl
 //
-lazy val generator = project
-  .in(file("build/generator"))
-  .enablePlugins(SbtTwirl)
-  .disablePlugins(RevolverPlugin)
-  .settings(staticFilesGeneratorDependencies)
-  .settings(
-    publish / skip := true
-  )
-
 // Aggregate root project
 // This is the root project that aggregates all other projects
 // It is used to run tasks on all projects at once.
 lazy val root = project
   .in(file("."))
   .aggregate(
-    generator,
     server,
     sharedJs,
     sharedJvm,
@@ -65,9 +55,9 @@ lazy val root = project
 //
 lazy val server = project
   .in(file("modules/server"))
-  .enablePlugins(serverPlugins: _*)
+  .enablePlugins(SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
   .settings(
-    staticGenerationSettings(generator, client)
+    staticGenerationSettings(client)
   )
   .settings(
     fork := true,
@@ -101,10 +91,10 @@ lazy val client = scalajsProject("client")
       mode match {
         case "ESModule" =>
           config
-            .withModuleKind(scalaJSModule)
+            .withModuleKind(ModuleKind.ESModule)
         case _ =>
           config
-            .withModuleKind(scalaJSModule)
+            .withModuleKind(ModuleKind.ESModule)
             .withSourceMap(false)
             .withModuleSplitStyle(ModuleSplitStyle.SmallModulesFor(List("org.worldofscala.app")))
       }
@@ -141,7 +131,7 @@ def scalajsProject(projectId: String): Project =
     id = projectId,
     base = file(s"modules/$projectId")
   )
-    .enablePlugins(scalaJSPlugin)
+    .enablePlugins(ScalaJSPlugin)
     .disablePlugins(RevolverPlugin)
     .settings(nexusNpmSettings)
     .settings(Test / requireJsDomEnv := true)
@@ -162,17 +152,5 @@ Global / onLoad := {
 
   insureBuildEnvFile(baseDirectory.value, (client / scalaVersion).value)
 
-  // This is hack to share static files between server and client.
-  // It creates symlinks from server to client static files
-  // Ideally, we should use a shared folder for static files
-  // Or use a shared CDN
-  // Or copy the files to the target directory of the server at build time.
-  symlink(server.base / "src" / "main" / "public" / "img", client.base / "img")
-  symlink(server.base / "src" / "main" / "public" / "css", client.base / "css")
-  symlink(server.base / "src" / "main" / "public" / "res", client.base / "res")
-
-  symlink(server.base / "src" / "main" / "resources" / "public" / "img", client.base / "img")
-  symlink(server.base / "src" / "main" / "resources" / "public" / "css", client.base / "css")
-  symlink(server.base / "src" / "main" / "resources" / "public" / "res", client.base / "res")
   (Global / onLoad).value
 }
