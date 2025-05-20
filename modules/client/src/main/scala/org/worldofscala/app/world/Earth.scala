@@ -131,7 +131,7 @@ object Earth {
     val animate: () => Unit = () => {
 
       // globeGroup.rotation.x += 0.001;
-      globeGroup.rotation.y += 0.0005;
+      // globeGroup.rotation.y += 0.0005;
 
       renderer.render(scene, camera);
       orbitControl.update()
