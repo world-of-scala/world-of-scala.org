@@ -121,7 +121,8 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
   // .disablePlugins(RevolverPlugin)
   .in(file("modules/shared"))
   .settings(
-    sharedJvmAndJsLibraryDependencies
+    sharedJvmAndJsLibraryDependencies,
+    testingLibraryDependencies
   )
   .settings(
     publish / skip := true

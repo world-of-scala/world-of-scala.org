@@ -64,7 +64,7 @@ object Dependencies {
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle"  % Versions.tapir,
       "dev.cheleb"                  %% "zio-tapir-server"         % Versions.zioLaminarTapir,
       "com.softwaremill.sttp.tapir" %% "tapir-sttp-stub-server"   % Versions.tapir   % Test,
-      "dev.zio"                     %% "zio-test"                 % Versions.zio,
+      "dev.zio"                     %% "zio-test"                 % Versions.zio     % Test,
       "dev.zio"                     %% "zio-test-junit"           % Versions.zio     % Test,
       "dev.zio"                     %% "zio-test-sbt"             % Versions.zio     % Test,
       "dev.zio"                     %% "zio-test-magnolia"        % Versions.zio     % Test,
@@ -78,9 +78,9 @@ object Dependencies {
 
   val testingLibraryDependencies =
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit"        % Versions.mUnit % Test,
-      "dev.zio"       %% "zio-test"     % Versions.zio   % Test,
-      "dev.zio"       %% "zio-test-sbt" % Versions.zio   % Test
+      "org.scalameta" %%% "munit"        % Versions.mUnit % Test,
+      "dev.zio"       %%% "zio-test"     % Versions.zio   % Test,
+      "dev.zio"       %%% "zio-test-sbt" % Versions.zio   % Test
     )
 
   val sharedJvmAndJsLibraryDependencies: Setting[Seq[ModuleID]] =
