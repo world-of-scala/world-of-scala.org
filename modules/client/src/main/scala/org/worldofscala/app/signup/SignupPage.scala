@@ -15,16 +15,10 @@ import scala.concurrent.duration.DurationInt
 import org.worldofscala.app.given
 import org.worldofscala.user.*
 
-extension (v: Var[Boolean])
-  def when[A](a: A) = v.signal.map:
+extension (v: Signal[Boolean])
+  def mapTrueToSome[A](a: A) = v.map:
     case true  => Some(a)
     case false => None
-extension [A](v: Var[A])
-  def when[B](b: B)(p: A => Boolean) = v.signal
-    .map(p)
-    .map:
-      case true  => Some(b)
-      case false => None
 
 object SignupPage:
   def apply() =
@@ -89,7 +83,7 @@ object SignupPage:
       ),
       div(
         styleAttr := "float: both;",
-        child.maybe <-- debugVar.when:
+        child.maybe <-- debugVar.signal.mapTrueToSome:
           div(
             styleAttr := "max-width: 300px; margin:1em auto",
             Title("Databinding"),
