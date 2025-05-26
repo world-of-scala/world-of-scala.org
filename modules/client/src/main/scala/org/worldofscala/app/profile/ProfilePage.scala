@@ -2,26 +2,24 @@ package org.worldofscala.app.profile
 
 import com.raquo.laminar.api.L.*
 
-import org.worldofscala.app.given
-import org.worldofscala.user.*
-
 import dev.cheleb.ziotapir.laminar.*
-import org.scalajs.dom.HTMLDivElement
-import com.raquo.laminar.nodes.ReactiveHtmlElement
 
-object ProfilePage:
+import org.worldofscala.app.SecuredPage
+import org.worldofscala.user.*
+import org.worldofscala.auth.UserToken
+
+/**
+ * ProfilePage is a secured page that displays the user's profile information.
+ */
+object ProfilePage extends SecuredPage:
 
   val userBus = new EventBus[User]
 
-  def apply(): ReactiveHtmlElement[HTMLDivElement] = div(
-    child <-- session(h1("Please log in to view your profile")) { _ =>
-      div(
-        onMountCallback { _ =>
-          UserEndpoint.profile(()).emitTo(userBus)
-        },
-        renderUser
-      )
-    }
+  def securedContent(userToken: UserToken) = div(
+    onMountCallback { _ =>
+      UserEndpoint.profile(()).emitTo(userBus)
+    },
+    renderUser
   )
 
   def renderUser =
