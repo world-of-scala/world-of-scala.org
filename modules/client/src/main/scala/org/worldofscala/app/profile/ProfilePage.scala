@@ -4,25 +4,20 @@ import com.raquo.laminar.api.L.*
 
 import dev.cheleb.ziotapir.laminar.*
 
-import org.worldofscala.app.SecuredPage
 import org.worldofscala.user.*
 import org.worldofscala.auth.UserToken
+import org.worldofscala.app.SecuredPageWithInit
 
 /**
  * ProfilePage is a secured page that displays the user's profile information.
  */
-object ProfilePage extends SecuredPage:
+object ProfilePage extends SecuredPageWithInit:
 
   val userBus = new EventBus[User]
 
-  def securedContent(userToken: UserToken) = div(
-    onMountCallback { _ =>
-      UserEndpoint.profile(()).emitTo(userBus)
-    },
-    renderUser
-  )
-
-  def renderUser =
+  def init =
+    UserEndpoint.profile(()).emitTo(userBus)
+  def securedContent(userToken: UserToken) =
     div(
       h1("Profile Page"),
       child <-- userBus.events.map { user =>

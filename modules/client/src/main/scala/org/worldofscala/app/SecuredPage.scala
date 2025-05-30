@@ -11,10 +11,16 @@ trait SecuredPage:
 
   export app.session
 
+  def notlogged = h1("Please log in to view your profile")
+
   def securedContent(userToken: UserToken): ReactiveHtmlElement[HTMLDivElement]
 
-  def apply() = div(
-    child <-- session(h1("Please log in to view your profile")) { userToken =>
-      securedContent(userToken)
-    }
-  )
+  def content() =
+    div(
+      child <-- session(notlogged) { userToken =>
+        securedContent(userToken)
+      }
+    )
+
+  def apply(): ReactiveHtmlElement[HTMLDivElement] =
+    content()
