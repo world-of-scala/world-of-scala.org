@@ -19,12 +19,12 @@ object Dependencies {
     val slf4j                 = "2.0.17"
     val tapir                 = "1.11.29"
     val threesjs              = "0.0.1"
-    val zio                   = "2.1.17"
+    val zio                   = "2.1.19"
     val zioConfig             = "4.0.3"
-    val zioLaminarTapir       = "1.1.0"
+    val zioLaminarTapir       = "1.2.1"
     val zioLogging            = "2.2.4"
     val zioMock               = "1.0.0-RC12"
-    val zioPrelude            = "1.0.0-RC37"
+    val zioPrelude            = "1.0.0-RC40"
     val zioTestContainers     = "0.10.0"
   }
 
