@@ -12,7 +12,7 @@ import scala.scalajs.js.Math.PI
 
 import org.worldofscala.organisation.Organisation
 import org.worldofscala.organisation.OrganisationEndpoint
-import zio.ZIO
+import zio.*
 import org.worldofscala.organisation.LatLon
 import dev.cheleb.ziotapir.SameOriginBackendClientLive
 
@@ -91,32 +91,36 @@ object Earth {
       onMountCallback { _ =>
         OrganisationEndpoint
           .allStream(())
-          .jsonl[Organisation, Unit] { organisation =>
-            val meshIO: ZIO[Any, Any, GLTFResult] = organisation.meshId match {
-              case Some(meshId) =>
-                ZIO.async { callback =>
-                  loader.load(
-                    SameOriginBackendClientLive.backendBaseURL.addPath("api", "mesh", meshId.toString()).toString,
-                    (obj) => {
-                      callback(ZIO.succeed(obj))
-                    }
-                  )
-                }
-              case None =>
-                ZIO.async { callback =>
-                  loader.load(
-                    s"/public/res/pinner.glb",
-                    (obj) => {
-                      callback(ZIO.succeed(obj))
-                    }
-                  )
-                }
-            }
-            (for {
-              obj <- meshIO
-              _   <- ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}")
-              _   <- ZIO.attempt(addObj(obj, organisation.location))
-            } yield ()).ignore
+          .jsonlZIO[Organisation] {
+            case Right(organisation) =>
+              val meshIO: ZIO[Any, Any, GLTFResult] = organisation.meshId match {
+                case Some(meshId) =>
+                  ZIO.async { callback =>
+                    loader.load(
+                      SameOriginBackendClientLive.backendBaseURL.addPath("api", "mesh", meshId.toString()).toString,
+                      (obj) => {
+                        callback(ZIO.succeed(obj))
+                      }
+                    )
+                  }
+                case None =>
+                  ZIO.async { callback =>
+                    loader.load(
+                      s"/public/res/pinner.glb",
+                      (obj) => {
+                        callback(ZIO.succeed(obj))
+                      }
+                    )
+                  }
+              }
+              (for {
+                obj <- meshIO
+                _   <- ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}")
+                _   <- ZIO.attempt(addObj(obj, organisation.location))
+              } yield ()).ignore
+
+            case Left(errorMessage) =>
+              Console.printLine(s"Failed: $errorMessage")
           }
       }
     )
@@ -131,7 +135,7 @@ object Earth {
     val animate: () => Unit = () => {
 
       // globeGroup.rotation.x += 0.001;
-      globeGroup.rotation.y += 0.0005;
+      // globeGroup.rotation.y += 0.0005;
 
       renderer.render(scene, camera);
       orbitControl.update()

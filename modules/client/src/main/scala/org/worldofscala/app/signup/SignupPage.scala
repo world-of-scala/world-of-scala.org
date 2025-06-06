@@ -15,6 +15,11 @@ import scala.concurrent.duration.DurationInt
 import org.worldofscala.app.given
 import org.worldofscala.user.*
 
+extension (v: Signal[Boolean])
+  def mapTrueToSome[A](a: A) = v.map:
+    case true  => Some(a)
+    case false => None
+
 object SignupPage:
   def apply() =
     val personVar = Var(
@@ -78,14 +83,12 @@ object SignupPage:
       ),
       div(
         styleAttr := "float: both;",
-        child <-- debugVar.signal.map:
-          case true =>
-            div(
-              styleAttr := "max-width: 300px; margin:1em auto",
-              Title("Databinding"),
-              child.text <-- personVar.signal.map(_.render)
-            )
-          case false => div()
+        child.maybe <-- debugVar.signal.mapTrueToSome:
+          div(
+            styleAttr := "max-width: 300px; margin:1em auto",
+            Title("Databinding"),
+            child.text <-- personVar.signal.map(_.render)
+          )
       )
     )
 

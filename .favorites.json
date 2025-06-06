@@ -1,0 +1,34 @@
+[
+    {
+        "type": "Group",
+        "name": "Server",
+        "parent_id": null,
+        "workspaceRoot": null,
+        "workspacePath": null,
+        "id": "732GRuNl9dDpyh4X"
+    },
+    {
+        "type": "File",
+        "name": "/Users/cheleb/projects/cheleb/world-of-scala/modules/server/src/main/scala/org/worldofscala/Main.scala",
+        "parent_id": "732GRuNl9dDpyh4X",
+        "workspaceRoot": "/Users/cheleb/projects/cheleb/world-of-scala",
+        "workspacePath": "modules/server/src/main/scala/org/worldofscala/Main.scala",
+        "id": "9zUMaOTtEXCS6pl7"
+    },
+    {
+        "type": "Group",
+        "name": "Client",
+        "parent_id": null,
+        "workspaceRoot": null,
+        "workspacePath": null,
+        "id": "QH3UvcuA7CYsxlD8"
+    },
+    {
+        "type": "File",
+        "name": "/Users/cheleb/projects/cheleb/world-of-scala/modules/client/src/main/scala/org/worldofscala/app/Main.scala",
+        "parent_id": "QH3UvcuA7CYsxlD8",
+        "workspaceRoot": "/Users/cheleb/projects/cheleb/world-of-scala",
+        "workspacePath": "modules/client/src/main/scala/org/worldofscala/app/Main.scala",
+        "id": "1dhTxXvnwUp5mziS"
+    }
+]

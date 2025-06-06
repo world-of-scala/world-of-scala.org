@@ -18,10 +18,6 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
     .someOrFail(new Exception("Mesh not found"))
     .map(_.into[Mesh].transform)
 
-  // def create(mesh: NewMesh): Task[Mesh] =
-  //   val newMeshEntity = NewMeshEntity(None, mesh.name, Files.readAllBytes(mesh.data.body.toPath()))
-  //   meshRepository.saveMesh(newMeshEntity).map(_.into[Mesh].transform)
-
   def createStream(name: String, stream: InputStream): Task[Mesh.Id] =
     val newMeshEntity = NewMeshEntity(None, name, stream.readAllBytes())
     meshRepository.saveMesh(newMeshEntity).map(_.id)
@@ -30,6 +26,7 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
     meshRepository.updateThumbnail(id, Some(String(thumbnail.readAllBytes()))).map(_ => id)
   def listAll(): Task[List[(Mesh.Id, String, Option[String], Long)]] =
     meshRepository.listMeshes().map(meshes => Mesh.defaulEntry :: meshes)
+
 //   def streamAll(): Stream[Throwable, Byte] = ???
 
 }

@@ -24,43 +24,68 @@ object CreateMesh:
 
   val name                                       = Var("")
   val fileVar: Var[Option[org.scalajs.dom.File]] = Var(None)
-  val thumbnail = Var(
-    ""
-  )
+  val thumbnail                                  = Var("")
+
+  val meshes = EventBus[List[(OrgaMesh.Id, String, Option[String], Long)]]()
+
+  def reset() =
+    name.set("")
+    fileVar.set(None)
+    thumbnail.set("")
 
   def apply() =
     div(
-      h1("Meshes"),
+      styleAttr := "max-width: fit-content; margin:1em auto",
+      onMountCallback { _ =>
+        reset()
+      },
       div(
-        "Name: ",
-        input(
-          nameAttr    := "name",
-          placeholder := "Name",
-          onInput.mapToValue --> name
-        )
+        styleAttr := "float: left; margin:1em",
+        h1("Meshes"),
+        allMeshes()
       ),
       div(
-        input(
-          `type` := "file",
-          accept := ".glb",
-          onChange.mapToFiles --> {
-            case file :: Nil =>
-              fileVar.set(Some(file))
-            case _ =>
-              fileVar.set(None)
-
-          }
-        ),
-        img(
-          src <-- thumbnail.signal,
-          width  := "100",
-          height := "100"
+        styleAttr := "float: left; margin:1em",
+        h2("Create Mesh"),
+        div(
+          styleAttr := "float: left;",
+          "Name: ",
+          input(
+            nameAttr    := "name",
+            placeholder := "Name",
+            onInput.mapToValue --> name,
+            value <-- name.signal
+          )
         ),
         div(
-          display <-- fileVar.signal.map(o => if o.isEmpty then "none" else "block"),
+          styleAttr := "float: left;",
           div(
-            h2("Preview"),
-            child.maybe <-- fileVar.signal.map(preview)
+            styleAttr := "float: left;",
+            img(
+              src <-- thumbnail.signal,
+              width  := "100px",
+              height := "100px"
+            ),
+            div(
+              display <-- fileVar.signal.map(o => if o.isEmpty then "none" else "block"),
+              div(
+                h2("Preview"),
+                child.maybe <-- fileVar.signal.map(preview)
+              )
+            )
+          ),
+          div(
+            input(
+              `type` := "file",
+              accept := ".glb",
+              onChange.mapToFiles --> {
+                case file :: Nil =>
+                  fileVar.set(Some(file))
+                case _ =>
+                  fileVar.set(None)
+
+              }
+            )
           ),
           div(
             Button(
@@ -76,6 +101,9 @@ object CreateMesh:
                       val ios = for {
                         id <- MeshEndpoint.streamCreate(name.now(), in)
                         _  <- MeshEndpoint.putThumbnail(id, in2)
+                        ls <- MeshEndpoint.all(())
+                        _   = meshes.emit(ls)
+                        _   = reset()
                       } yield id
                       ios.runJs
                     }
@@ -84,8 +112,7 @@ object CreateMesh:
               }
             )
           )
-        ),
-        allMeshes()
+        )
       )
     )
 
@@ -121,7 +148,7 @@ object CreateMesh:
       camera.position.set(1, 1, 2)
 
       renderer.setPixelRatio(window.devicePixelRatio)
-      renderer.setSize(window.innerWidth * .18, window.innerHeight * .18);
+      renderer.setSize(100, 100);
 
       val orbitControl = OrbitControls(camera, renderer.domElement)
 
@@ -172,12 +199,14 @@ object CreateMesh:
     case None => None
   }
 
+  def loadAllMeshes(): Unit =
+    MeshEndpoint.all(()).emitTo(meshes)
+
   def allMeshes() =
-    val meshes = EventBus[List[(OrgaMesh.Id, String, Option[String], Long)]]()
 
     div(
       onMountCallback { _ =>
-        MeshEndpoint.all(()).emitTo(meshes)
+        loadAllMeshes()
       },
       overflowY := "scroll",
       height    := "400px",

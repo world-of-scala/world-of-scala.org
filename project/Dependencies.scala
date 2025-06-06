@@ -5,7 +5,7 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 object Dependencies {
   val Versions = new {
     val chimney               = "1.7.1"
-    val flywaydb              = "11.8.2"
+    val flywaydb              = "11.9.1"
     val frontroute            = "0.19.0"
     val iron                  = "3.0.1"
     val javaMail              = "1.6.2"
@@ -13,18 +13,18 @@ object Dependencies {
     val logback               = "1.5.18"
     val mUnit                 = "1.0.2"
     val osLib                 = "0.10.2"
-    val postgresql            = "42.7.5"
+    val postgresql            = "42.7.6"
     val quill                 = "4.8.6"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.17"
     val tapir                 = "1.11.29"
     val threesjs              = "0.0.1"
-    val zio                   = "2.1.17"
+    val zio                   = "2.1.19"
     val zioConfig             = "4.0.3"
-    val zioLaminarTapir       = "1.1.0"
+    val zioLaminarTapir       = "1.2.1"
     val zioLogging            = "2.2.4"
     val zioMock               = "1.0.0-RC12"
-    val zioPrelude            = "1.0.0-RC37"
+    val zioPrelude            = "1.0.0-RC40"
     val zioTestContainers     = "0.10.0"
   }
 
@@ -64,7 +64,7 @@ object Dependencies {
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle"  % Versions.tapir,
       "dev.cheleb"                  %% "zio-tapir-server"         % Versions.zioLaminarTapir,
       "com.softwaremill.sttp.tapir" %% "tapir-sttp-stub-server"   % Versions.tapir   % Test,
-      "dev.zio"                     %% "zio-test"                 % Versions.zio,
+      "dev.zio"                     %% "zio-test"                 % Versions.zio     % Test,
       "dev.zio"                     %% "zio-test-junit"           % Versions.zio     % Test,
       "dev.zio"                     %% "zio-test-sbt"             % Versions.zio     % Test,
       "dev.zio"                     %% "zio-test-magnolia"        % Versions.zio     % Test,
@@ -78,9 +78,9 @@ object Dependencies {
 
   val testingLibraryDependencies =
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit"        % Versions.mUnit % Test,
-      "dev.zio"       %% "zio-test"     % Versions.zio   % Test,
-      "dev.zio"       %% "zio-test-sbt" % Versions.zio   % Test
+      "org.scalameta" %%% "munit"        % Versions.mUnit % Test,
+      "dev.zio"       %%% "zio-test"     % Versions.zio   % Test,
+      "dev.zio"       %%% "zio-test-sbt" % Versions.zio   % Test
     )
 
   val sharedJvmAndJsLibraryDependencies: Setting[Seq[ModuleID]] =
