@@ -9,7 +9,7 @@ import Dependencies._
 //
 import DeploymentSettings._
 
-val scala3 = "3.7.0"
+val scala3 = "3.7.1"
 
 name := "World Of Scala"
 
@@ -121,7 +121,8 @@ lazy val shared = crossProject(JSPlatform, JVMPlatform)
   // .disablePlugins(RevolverPlugin)
   .in(file("modules/shared"))
   .settings(
-    sharedJvmAndJsLibraryDependencies
+    sharedJvmAndJsLibraryDependencies,
+    testingLibraryDependencies
   )
   .settings(
     publish / skip := true

@@ -2,12 +2,13 @@ package org.worldofscala.earth
 
 import io.getquill.*
 import io.getquill.jdbczio.Quill
-import java.util.UUID
+
 import org.worldofscala.earth.Mesh.Id
 
 import zio.*
 import io.scalaland.chimney.dsl.*
 import org.worldofscala.organisation.OrganisationEntity
+import org.worldofscala.repository.UUIDMapper
 
 trait MeshRepository:
   def get(id: Mesh.Id): Task[Option[MeshEntity]]
@@ -16,14 +17,13 @@ trait MeshRepository:
   def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Unit]
   def listMeshes(): Task[List[(Mesh.Id, String, Option[String], Long)]]
 
+object MeshRepository extends UUIDMapper[Mesh.Id](identity, Mesh.Id.apply)
+
 class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends MeshRepository:
 
   import quill.*
 
-  given MappedEncoding[Mesh.Id, UUID] =
-    MappedEncoding[Mesh.Id, UUID](identity)
-  given MappedEncoding[UUID, Mesh.Id] =
-    MappedEncoding[UUID, Mesh.Id](Mesh.Id.apply)
+  import MeshRepository.given
 
   inline given SchemaMeta[NewMeshEntity]      = schemaMeta[NewMeshEntity]("meshes")
   inline given InsertMeta[NewMeshEntity]      = insertMeta[NewMeshEntity](_.id)
@@ -57,8 +57,6 @@ class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends 
     } yield {
       (meshes.id, meshes.label, meshes.thumbnail, organisations)
     }))
-
-//    run(query[MeshEntity].map(mesh => (mesh.id, mesh.label, mesh.thumbnail)))
 
 object MeshRepositoryLive:
   def layer: URLayer[Quill.Postgres[SnakeCase], MeshRepository] =

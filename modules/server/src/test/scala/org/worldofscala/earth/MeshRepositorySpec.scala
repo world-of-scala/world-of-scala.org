@@ -5,7 +5,6 @@ import zio.test.Assertion.*
 import zio.test.*
 
 import org.worldofscala.earth.*
-import org.worldofscala.Repository
 
 object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes.sql") {
 
@@ -17,8 +16,8 @@ object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes
     )
 
   override def spec: Spec[TestEnvironment & Scope, Any] =
-    suite("CompanyRepositorySpec")(
-      test("create a company") {
+    suite("MeshRepositorySpec")(
+      test("create a mesh") {
         val program = for {
           repository <- ZIO.service[MeshRepository]
           meshEntity <- repository.saveMesh(scalaMesh)
@@ -27,7 +26,7 @@ object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes
 
         program.map(meshEntity => assert(meshEntity.label)(equalTo(scalaMesh.label)))
       },
-      test("list companies") {
+      test("list meshes") {
         val program = for {
           repository   <- ZIO.service[MeshRepository]
           _            <- repository.saveMesh(scalaMesh)

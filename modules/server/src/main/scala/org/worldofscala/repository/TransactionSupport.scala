@@ -1,4 +1,4 @@
-package org.worldofscala.repositories
+package org.worldofscala.repository
 
 import zio.Task
 

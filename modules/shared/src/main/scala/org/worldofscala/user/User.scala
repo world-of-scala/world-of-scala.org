@@ -20,9 +20,22 @@ case class NewUser(
 ) derives JsonCodec,
       Schema,
       Debug {
-  def errorMessages = {
-    val passwordErrors = if password == passwordConfirmation then Nil else List("Passwords do not match")
-    passwordErrors
+  def errorMessages =
+    NewUser.validate(this)
+}
+
+object NewUser {
+  private val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".r
+
+  def isValidEmail(email: String): Boolean =
+    emailRegex.matches(email)
+
+  def validate(newUser: NewUser): List[String] = {
+    val emailErrors =
+      if isValidEmail(newUser.email) then Nil else List("Invalid email format")
+    val passwordErrors =
+      if newUser.password == newUser.passwordConfirmation then Nil else List("Passwords do not match")
+    emailErrors ++ passwordErrors
   }
 }
 
@@ -54,11 +67,8 @@ object User:
     def apply(uuid: UUID): Id         = uuid
     def unapply(id: Id): Option[UUID] = Some(id)
 
-//    extension (id: Id) def value: UUID = id
-
     given JsonCodec[Id] = JsonCodec.uuid
     given Schema[Id]    = Schema.schemaForUUID
-
     given Debug[Id] with
       def debug(value: Id): Repr = Repr.String(value.toString)
 

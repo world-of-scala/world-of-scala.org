@@ -7,7 +7,7 @@ import java.time.ZonedDateTime
 
 import org.worldofscala.auth.*
 
-import org.worldofscala.repositories.TransactionSupport
+import org.worldofscala.repository.TransactionSupport
 
 import java.sql.SQLException
 
