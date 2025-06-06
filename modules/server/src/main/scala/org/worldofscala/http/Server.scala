@@ -11,10 +11,13 @@ import sttp.tapir.server.interceptor.cors.CORSInterceptor
 
 import org.worldofscala.observability.*
 import org.worldofscala.config.ServerConfig
-import org.worldofscala.user.UserService
-import org.worldofscala.auth.JWTService
-import org.worldofscala.organisation.OrganisationService
-import org.worldofscala.earth.MeshService
+import org.worldofscala.user.*
+
+import org.worldofscala.organisation.*
+import org.worldofscala.earth.*
+
+import org.worldofscala.auth.JWTServiceLive
+import org.worldofscala.Repository
 
 object Server {
 
@@ -31,10 +34,24 @@ object Server {
       )
       .options
 
-  def start: RIO[ServerConfig & UserService & JWTService & OrganisationService & MeshService, Unit] = for {
+  def start: RIO[ServerConfig, Unit] = for {
     serverConfig <- ZIO.service[ServerConfig]
     _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
     apiEndpoints <- org.worldofscala.http.HttpApi.endpoints
+                      .provide(
+                        // Service layers
+                        UserServiceLive.layer,
+                        OrganisationServiceLive.layer,
+                        MeshServiceLive.layer,
+                        JWTServiceLive.configuredLayer,
+                        // Repository layers
+                        UserRepositoryLive.layer,
+                        OrganisationRepositoryLive.layer,
+                        MeshRepositoryLive.layer,
+                        Repository.dataLayer
+                        // , ZLayer.Debug.mermaid
+                      )
+
     docEndpoints = SwaggerInterpreter()
                      .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
     serverLayer = zio.http.Server.defaultWith(config => config.binding("0.0.0.0", serverConfig.port))

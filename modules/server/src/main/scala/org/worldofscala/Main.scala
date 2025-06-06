@@ -4,21 +4,15 @@ import zio.*
 import zio.logging.LogFormat
 import zio.logging.backend.SLF4J
 
-import org.worldofscala.services.*
-import org.worldofscala.user.UserRepositoryLive
-import org.worldofscala.user.UserServiceLive
-import org.worldofscala.auth.JWTServiceLive
-import org.worldofscala.organisation.*
-import org.worldofscala.config.*
-import org.worldofscala.earth.MeshServiceLive
-import org.worldofscala.earth.MeshRepositoryLive
+import org.worldofscala.config.ServerConfig
 import org.worldofscala.http.Server
+import org.worldofscala.services.*
 
-object HttpServer extends ZIOAppDefault {
+object HttpServer extends ZIOAppDefault:
 
   override val bootstrap = SLF4J.slf4j(LogFormat.colored)
 
-  private val program = for {
+  private def program = for {
     _ <- FlywayService.runMigrations
     _ <- Server.start
   } yield ()
@@ -27,17 +21,8 @@ object HttpServer extends ZIOAppDefault {
     program
       .provide(
         ServerConfig.layer,
-        // Service layers
-        UserServiceLive.layer,
-        OrganisationServiceLive.layer,
-        MeshServiceLive.layer,
-        FlywayServiceLive.configuredLayer,
-        JWTServiceLive.configuredLayer,
-        // Repository layers
-        UserRepositoryLive.layer,
-        OrganisationRepositoryLive.layer,
-        MeshRepositoryLive.layer,
-        Repository.dataLayer
+        FlywayServiceLive.configuredLayer
         // , ZLayer.Debug.mermaid
       )
-}
+
+end HttpServer
