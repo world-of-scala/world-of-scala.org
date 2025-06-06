@@ -17,7 +17,7 @@ import org.worldofscala.organisation.*
 import org.worldofscala.earth.*
 
 import org.worldofscala.auth.JWTServiceLive
-import org.worldofscala.Repository
+import org.worldofscala.repository.Repository
 
 object Server {
 

@@ -14,10 +14,6 @@ import zio.stream.ZStream
 class MeshController private (meshService: MeshService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
 
-//   val create: ServerEndpoint[Any, Task] = MeshEndpoint.create.zServerAuthenticatedLogic { userId => mesh =>
-//     meshService.create(mesh)
-//   }
-
   val listAll: ServerEndpoint[Any, Task] = MeshEndpoint.all.zServerLogic { _ =>
     meshService.listAll()
   }

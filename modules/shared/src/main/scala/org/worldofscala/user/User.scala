@@ -67,11 +67,8 @@ object User:
     def apply(uuid: UUID): Id         = uuid
     def unapply(id: Id): Option[UUID] = Some(id)
 
-//    extension (id: Id) def value: UUID = id
-
     given JsonCodec[Id] = JsonCodec.uuid
     given Schema[Id]    = Schema.schemaForUUID
-
     given Debug[Id] with
       def debug(value: Id): Repr = Repr.String(value.toString)
 

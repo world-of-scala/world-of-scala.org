@@ -5,7 +5,6 @@ import zio.test.Assertion.*
 import zio.test.*
 
 import org.worldofscala.earth.*
-import org.worldofscala.Repository
 
 object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes.sql") {
 

@@ -2,13 +2,12 @@ package org.worldofscala.user
 
 import zio.*
 
-
 import io.getquill.*
 import io.getquill.jdbczio.*
 import io.getquill.jdbczio.Quill.Postgres
 import io.scalaland.chimney.dsl.*
 
-import java.util.UUID
+import org.worldofscala.repository.UUIDMapper
 
 trait UserRepository {
   def create(user: NewUserEntity): Task[UserEntity]
@@ -18,11 +17,7 @@ trait UserRepository {
   def delete(id: User.Id): Task[UserEntity]
 }
 
-object UserRepository:
-  given MappedEncoding[User.Id, UUID] =
-    MappedEncoding[User.Id, UUID](identity)
-  given MappedEncoding[UUID, User.Id] =
-    MappedEncoding[UUID, User.Id](User.Id.apply)
+object UserRepository extends UUIDMapper[User.Id](identity, User.Id.apply)
 
 class UserRepositoryLive private (quill: Quill.Postgres[SnakeCase]) extends UserRepository {
 
