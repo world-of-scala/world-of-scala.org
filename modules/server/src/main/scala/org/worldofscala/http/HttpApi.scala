@@ -1,4 +1,4 @@
-package org.worldofscala
+package org.worldofscala.http
 
 import zio.*
 import sttp.tapir.server.ServerEndpoint
@@ -7,8 +7,7 @@ import sttp.capabilities.zio.ZioStreams
 import org.worldofscala.auth.JWTService
 import org.worldofscala.health.HealthController
 import org.worldofscala.organisation.*
-
-import user.*
+import org.worldofscala.user.*
 import dev.cheleb.ziotapir.*
 import org.worldofscala.earth.MeshController
 import org.worldofscala.earth.MeshService
@@ -37,6 +36,4 @@ object HttpApi extends Routes {
     endpoints       <- endpointsZIO
     streamEndpoints <- streamEndpointsZIO
   } yield endpoints ++ streamEndpoints
-
-//  val streamingEndpointsZIO =
 }

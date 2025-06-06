@@ -18,7 +18,10 @@
     },
     "world-of-scala-metals": {
       "url": "http://localhost:60678/sse",
-      "type": "sse"
+      "type": "sse",
+      "alwaysAllow": [
+        "compile-file"
+      ]
     }
   }
 }
