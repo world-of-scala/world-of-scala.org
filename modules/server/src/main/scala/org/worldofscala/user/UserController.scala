@@ -32,7 +32,7 @@ class UserController private (personService: UserService, jwtService: JWTService
 }
 
 object UserController {
-  val makeZIO: URIO[UserService & JWTService, UserController] =
+  def makeZIO: URIO[UserService & JWTService, UserController] =
     for
       jwtService    <- ZIO.service[JWTService]
       personService <- ZIO.service[UserService]
