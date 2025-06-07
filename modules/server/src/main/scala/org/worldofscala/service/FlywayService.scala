@@ -14,13 +14,18 @@ trait FlywayService {
 }
 
 object FlywayService:
-  def runMigrations: RIO[FlywayService, Unit] = for {
-    flyway <- ZIO.service[FlywayService]
-    _ <- flyway.runMigrations().catchSome { case e =>
-           ZIO.logError(s"Error running migrations: ${e.getMessage()}")
-             *> flyway.runRepair() *> flyway.runMigrations()
-         }
-  } yield ()
+  def runMigrations: Task[Unit] =
+    build
+      .provide(FlywayServiceLive.configuredLayer)
+
+  private def build: RIO[FlywayService, Unit] =
+    for {
+      flyway <- ZIO.service[FlywayService]
+      _      <- flyway.runMigrations().catchSome { case e =>
+             ZIO.logError(s"Error running migrations: ${e.getMessage()}")
+               *> flyway.runRepair() *> flyway.runMigrations()
+           }
+    } yield ()
 
 class FlywayServiceLive private (flyway: Flyway) extends FlywayService {
   override def runClean(): Task[Unit]      = ZIO.attemptBlocking(flyway.clean())

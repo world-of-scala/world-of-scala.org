@@ -49,6 +49,6 @@ object Server {
            .provideSomeLayer(serverLayer) <* Console.printLine("Server started !")
   } yield ()
 
-  def start: ZIO[ServerConfig, Throwable, Unit] = build
-    .provideSomeLayer(Repository.dataLayer)
+  def start: Task[Unit] = build
+    .provide(Repository.dataLayer, ServerConfig.layer)
 }
