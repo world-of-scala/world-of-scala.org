@@ -11,6 +11,9 @@ import sttp.tapir.server.interceptor.cors.CORSInterceptor
 
 import org.worldofscala.observability.*
 import org.worldofscala.config.ServerConfig
+import io.getquill.jdbczio.Quill.Postgres
+import io.getquill.SnakeCase
+import org.worldofscala.repository.Repository
 
 object Server {
 
@@ -27,7 +30,7 @@ object Server {
       )
       .options
 
-  def start: RIO[ServerConfig, Unit] = for {
+  private def build = for {
     serverConfig <- ZIO.service[ServerConfig]
     _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
     apiEndpoints <- HttpApi.endpoints
@@ -35,7 +38,7 @@ object Server {
     docEndpoints = SwaggerInterpreter()
                      .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
     serverLayer = zio.http.Server.defaultWith(config => config.binding("0.0.0.0", serverConfig.port))
-    _ <- zio.http.Server
+    _          <- zio.http.Server
            .serve(
              Routes(
                Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
@@ -45,4 +48,7 @@ object Server {
            )
            .provideSomeLayer(serverLayer) <* Console.printLine("Server started !")
   } yield ()
+
+  def start: ZIO[ServerConfig, Throwable, Unit] = build
+    .provideSomeLayer(Repository.dataLayer)
 }

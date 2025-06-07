@@ -7,6 +7,7 @@ import zio.logging.backend.SLF4J
 import org.worldofscala.config.ServerConfig
 import org.worldofscala.http.Server
 import org.worldofscala.services.*
+import org.worldofscala.repository.Repository
 
 object HttpServer extends ZIOAppDefault:
 
@@ -22,6 +23,7 @@ object HttpServer extends ZIOAppDefault:
       .provide(
         ServerConfig.layer,
         FlywayServiceLive.configuredLayer
+
         // , ZLayer.Debug.mermaid
       )
 

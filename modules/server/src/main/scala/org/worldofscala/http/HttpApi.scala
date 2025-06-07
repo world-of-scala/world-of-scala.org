@@ -13,6 +13,8 @@ import org.worldofscala.user.*
 import org.worldofscala.repository.Repository
 import sttp.tapir.server.ServerEndpoint
 import sttp.capabilities.zio.ZioStreams
+import io.getquill.jdbczio.Quill.Postgres
+import io.getquill.SnakeCase
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html
 type Deps = UserService & JWTService & OrganisationService & MeshService
@@ -41,8 +43,8 @@ object HttpApi extends Routes {
       streamEndpoints <- streamEndpointsZIO(mem)
     } yield endpoints ++ streamEndpoints
 
-  def endpoints: Task[List[ServerEndpoint[ZioStreams, Task]]] =
-    gatherRoutes.provide(
+  def endpoints =
+    gatherRoutes.provideSome[Postgres[SnakeCase]](
       // Service layers
       UserServiceLive.layer,
       OrganisationServiceLive.layer,
@@ -51,8 +53,8 @@ object HttpApi extends Routes {
       // Repository layers
       UserRepositoryLive.layer,
       OrganisationRepositoryLive.layer,
-      MeshRepositoryLive.layer,
-      Repository.dataLayer
+      MeshRepositoryLive.layer
+
       // , ZLayer.Debug.mermaid
     )
 }
