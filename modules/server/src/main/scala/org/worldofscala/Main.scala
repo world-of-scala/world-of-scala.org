@@ -13,6 +13,7 @@ object HttpServer extends ZIOAppDefault:
 
   override def run: Task[Unit] =
     for {
+      _ <- ZIO.logInfo("Starting World of Scala HTTP server...")
       _ <- FlywayService.runMigrations
       _ <- Server.start
     } yield ()
