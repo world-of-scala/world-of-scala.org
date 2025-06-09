@@ -9,6 +9,7 @@ import zio.prelude.Debug.Repr
 import zio.prelude.magnolia.*
 
 import dev.cheleb.scalamigen.NoPanel
+import org.worldofscala.UUIDOpaque
 
 @NoPanel
 case class NewUser(
@@ -63,13 +64,7 @@ case class User(
 object User:
 
   opaque type Id <: UUID = UUID
-  object Id:
-    def apply(uuid: UUID): Id         = uuid
-    def unapply(id: Id): Option[UUID] = Some(id)
-
-    given JsonCodec[Id] = JsonCodec.uuid
-    given Schema[Id]    = Schema.schemaForUUID
-    given Debug[Id] with
-      def debug(value: Id): Repr = Repr.String(value.toString)
+  object Id extends UUIDOpaque[Id](JsonCodec.uuid, Schema.schemaForUUID):
+    def apply(uuid: UUID): Id = uuid
 
 case class UserID(id: User.Id, email: String) derives JsonCodec, Schema

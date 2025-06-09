@@ -3,10 +3,10 @@ package org.worldofscala.earth
 import java.util.UUID
 import zio.json.JsonCodec
 import sttp.tapir.Schema
-import zio.prelude.Debug
-import zio.prelude.Debug.Repr
 
 import sttp.tapir.Codec
+
+import org.worldofscala.UUIDOpaque
 
 final case class Mesh(id: Mesh.Id, label: String, blob: Array[Byte]) derives JsonCodec, Schema
 
@@ -18,13 +18,7 @@ object Mesh:
 
   opaque type Id <: UUID = UUID
 
-  object Id:
-    def apply(uuid: UUID): Id         = uuid
-    def unapply(id: Id): Option[UUID] = Some(id)
+  object Id extends UUIDOpaque[Id](JsonCodec.uuid, Schema.schemaForUUID):
+    def apply(uuid: UUID): Id = uuid
 
-    given JsonCodec[Id]        = JsonCodec.uuid
-    given Schema[Id]           = Schema.schemaForUUID
     given Codec.PlainCodec[Id] = Codec.uuid
-
-    given Debug[Id] with
-      def debug(value: Id): Repr = Repr.String(value.toString)

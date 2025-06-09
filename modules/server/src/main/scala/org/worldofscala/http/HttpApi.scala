@@ -10,7 +10,6 @@ import org.worldofscala.health.HealthController
 import org.worldofscala.organisation.*
 import org.worldofscala.user.*
 
-import org.worldofscala.repository.Repository
 import sttp.tapir.server.ServerEndpoint
 import sttp.capabilities.zio.ZioStreams
 import io.getquill.jdbczio.Quill.Postgres
