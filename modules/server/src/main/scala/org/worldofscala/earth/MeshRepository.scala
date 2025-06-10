@@ -46,7 +46,7 @@ class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends 
 
   override def listMeshes(): Task[List[(Mesh.Id, String, Option[String], Long)]] =
     run(quote(for {
-      meshes <- query[MeshEntity]
+      meshes        <- query[MeshEntity]
       organisations <- query[OrganisationEntity]
                          .leftJoin(org => org.meshId == Some(meshes.id))
                          .groupBy(o => (meshes.id, meshes.label, meshes.thumbnail, o.map(_.meshId)))
@@ -56,7 +56,7 @@ class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends 
 
     } yield {
       (meshes.id, meshes.label, meshes.thumbnail, organisations)
-    }))
+    }).sortBy(_._2))
 
 object MeshRepositoryLive:
   def layer: URLayer[Quill.Postgres[SnakeCase], MeshRepository] =
