@@ -12,6 +12,7 @@ import org.worldofscala.app.given
 import org.worldofscala.app.Router
 import org.worldofscala.earth.Mesh
 import org.worldofscala.earth.MeshEndpoint
+import org.worldofscala.earth.MeshEntry
 
 object CreateOrganisation:
 
@@ -24,7 +25,7 @@ object CreateOrganisation:
               lat.toDoubleOption.toRight("Invalid latitude"),
               lon.toDoubleOption.toRight("Invalid longitude")
             ) match {
-              case (Right(lat), Right(lon)) => Right(LatLon(lat, lon))
+              case (Right(lat), Right(lon))           => Right(LatLon(lat, lon))
               case (Left(latError), Left(rightError)) =>
                 Left(s"$latError and $rightError")
               case (Left(latError), _) => Left(latError)
@@ -41,7 +42,7 @@ object CreateOrganisation:
     val organisationVar = Var(
       NewOrganisation("", LatLon.empty, Mesh.default)
     )
-    val meshes = EventBus[List[(Mesh.Id, String, Option[String], Long)]]()
+    val meshes = EventBus[List[MeshEntry]]()
 
     div(
       onMountCallback { _ =>

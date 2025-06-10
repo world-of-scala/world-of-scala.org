@@ -9,12 +9,13 @@ import sttp.tapir.Codec
 import org.worldofscala.UUIDOpaque
 
 final case class Mesh(id: Mesh.Id, label: String, blob: Array[Byte]) derives JsonCodec, Schema
+final case class MeshEntry(id: Mesh.Id, label: String, thumbnail: Option[String], count: Long) derives JsonCodec, Schema
 
 object Mesh:
 
   def default = Mesh.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
 
-  def defaulEntry = (default, "Scala", None, 0L)
+  def defaulEntry = MeshEntry(default, "Scala", None, 0L)
 
   opaque type Id <: UUID = UUID
 
@@ -22,3 +23,7 @@ object Mesh:
     def apply(uuid: UUID): Id = uuid
 
     given Codec.PlainCodec[Id] = Codec.uuid
+
+  extension (id: Id) {
+    def <(that: UUID) = id.toString < that.toString
+  }

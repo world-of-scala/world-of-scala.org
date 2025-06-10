@@ -19,6 +19,7 @@ import be.doeraene.webcomponents.ui5.configkeys.*
 import org.worldofscala.earth.Mesh as OrgaMesh
 
 import THREE.*
+import org.worldofscala.earth.MeshEntry
 
 object CreateMesh:
 
@@ -26,7 +27,7 @@ object CreateMesh:
   val fileVar: Var[Option[org.scalajs.dom.File]] = Var(None)
   val thumbnail                                  = Var("")
 
-  val meshes = EventBus[List[(OrgaMesh.Id, String, Option[String], Long)]]()
+  val meshes = EventBus[List[MeshEntry]]()
 
   def reset() =
     name.set("")
@@ -118,7 +119,7 @@ object CreateMesh:
 
   def preview(fileOption: Option[org.scalajs.dom.File]) = fileOption match {
     case Some(file) =>
-      val loader = new GLTFLoader()
+      val loader   = new GLTFLoader()
       val renderer = WebGLRenderer(
         preserveDrawingBuffer = true,
         antialias = true,
@@ -127,7 +128,7 @@ object CreateMesh:
 
       var rotateX = 0.01d
       var rotateY = 0.01d
-      val div2 = div(
+      val div2    = div(
         CheckBox(
           "Rotate",
           checked := true,
@@ -219,7 +220,7 @@ object CreateMesh:
         _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Preview")),
         _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Count")),
         children <-- meshes.events.map(
-          _.map((id, name, thumbnail, count) =>
+          _.map { case MeshEntry(id, name, thumbnail, count) =>
             compat.Table.row(
               dataAttr("card-name") := id.toString,
               _.cell(id.toString()),
@@ -237,7 +238,7 @@ object CreateMesh:
               ),
               _.cell(count.toString())
             )
-          )
+          }
         )
       )
     )
