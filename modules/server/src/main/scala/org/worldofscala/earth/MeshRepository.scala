@@ -15,7 +15,7 @@ trait MeshRepository:
   def saveMesh(mesh: NewMeshEntity): Task[MeshEntity]
 //   def deleteMesh(id: Mesh.Id): Unit
   def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Unit]
-  def listMeshes(offset: Mesh.Id): Task[List[MeshEntry]]
+  def listMeshes(): Task[List[MeshEntry]]
 
 object MeshRepository extends UUIDMapper[Mesh.Id](identity, Mesh.Id.apply)
 
@@ -44,7 +44,7 @@ class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends 
   override def get(id: Id): Task[Option[MeshEntity]] =
     run(query[MeshEntity].filter(_.id == lift(id))).map(_.headOption)
 
-  override def listMeshes(offset: Mesh.Id): Task[List[MeshEntry]] =
+  override def listMeshes(): Task[List[MeshEntry]] =
     run(
       quote(
         for {
