@@ -18,6 +18,15 @@ fi
 
 rm -f $MAIN_JS_FILE
 
+# Define get_mtime function based on OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    get_mtime() { stat -f %m "$1"; }
+else
+    # Linux and others
+    get_mtime() { stat -c %Y "$1"; }
+fi
+
 filename_lock=node_modules/.package-lock.json
 
 function npmInstall() {
@@ -26,8 +35,8 @@ function npmInstall() {
         npm i
     else
         filename=package.json
-        age=$(stat -t %s -f %m -- "$filename")
-        age_lock=$(stat -t %s -f %m -- "$filename_lock")
+        age=$(get_mtime "$filename")
+        age_lock=$(get_mtime "$filename_lock")
         if [ $age_lock -lt $age ]; then
             echo "Updating npm dependencies..."
             npm i
