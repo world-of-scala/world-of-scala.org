@@ -8,6 +8,8 @@ import com.raquo.laminar.api.L.*
 
 import dev.cheleb.ziotapir.laminar.*
 
+import dev.cheleb.zthreesjs.*
+
 import scala.scalajs.js.Math.PI
 
 import org.worldofscala.organisation.Organisation
@@ -95,23 +97,15 @@ object Earth {
             case Right(organisation) =>
               val meshIO: ZIO[Any, Any, GLTFResult] = organisation.meshId match {
                 case Some(meshId) =>
-                  ZIO.async { callback =>
-                    loader.load(
-                      SameOriginBackendClientLive.backendBaseURL.addPath("api", "mesh", meshId.toString()).toString,
-                      (obj) => {
-                        callback(ZIO.succeed(obj))
-                      }
-                    )
-                  }
+
+                  loader.zload(
+                    SameOriginBackendClientLive.url("api", "mesh", meshId.toString())
+                  )
+
                 case None =>
-                  ZIO.async { callback =>
-                    loader.load(
-                      s"/public/res/pinner.glb",
-                      (obj) => {
-                        callback(ZIO.succeed(obj))
-                      }
-                    )
-                  }
+                  loader.zload(
+                    SameOriginBackendClientLive.url(s"/public/res/pinner.glb")
+                  )
               }
               (for {
                 obj <- meshIO
