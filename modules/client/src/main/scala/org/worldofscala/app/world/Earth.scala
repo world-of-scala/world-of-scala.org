@@ -96,26 +96,24 @@ object Earth {
       ) {
         case (cache, Right(organisation)) =>
 
-          // val  meshId = organisation.meshId.getOrElse(org.worldofscala.earth.Mesh.default)
+          val (meshId, meshUrl) = organisation.meshId match {
+            case Some(id) =>
+              (id, SameOriginBackendClientLive.url("api", "mesh", id.toString()))
+            case None =>
+              (org.worldofscala.earth.Mesh.default, SameOriginBackendClientLive.url("public", "res", "pinner.glb"))
+          }
 
-          val meshIO: ZIO[Any, scala.scalajs.js.Error, GLTFResult] = organisation.meshId match {
-            case Some(meshId) =>
-              cache.get(meshId) match {
-                case Some(obj) =>
-                  ZIO.debug(s"Using cached mesh for ${organisation.name} with id ${meshId}") *>
-                    ZIO.succeed(obj)
-
-                case None =>
-                  ZIO.debug(s"Loading mesh for ${organisation.name} with id ${meshId}") *>
-                    loader.zload(
-                      SameOriginBackendClientLive.url("api", "mesh", meshId.toString())
-                    )
-              }
+          val meshIO = cache.get(meshId) match {
+            case Some(obj) =>
+              ZIO.debug(s"Using cached mesh for ${organisation.name} with id ${meshId}") *>
+                ZIO.succeed(obj)
 
             case None =>
-              loader.zload(
-                SameOriginBackendClientLive.url(s"public", "res", "pinner.glb")
-              )
+              ZIO.debug(s"Loading mesh for ${organisation.name} with id ${meshId}") *>
+                loader.zload(
+                  meshUrl
+                )
+
           }
           for {
             obj <-
