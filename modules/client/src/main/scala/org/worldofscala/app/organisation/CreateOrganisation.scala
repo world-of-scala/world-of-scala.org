@@ -46,7 +46,7 @@ object CreateOrganisation:
 
     div(
       onMountCallback { _ =>
-        MeshEndpoint.all(()).emitTo(meshes)
+        MeshEndpoint.all(()).emit(meshes)
       },
       h1("Create  Organisation"),
       div(
@@ -69,7 +69,7 @@ object CreateOrganisation:
 
             OrganisationEndpoint
               .create(organisationVar.now())
-              .runJs
+              .run
 
             // scalafmt:on
 

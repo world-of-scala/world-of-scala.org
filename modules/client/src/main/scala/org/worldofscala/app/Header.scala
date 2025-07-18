@@ -100,5 +100,5 @@ object Header:
     UserEndpoint
       .login(credentials.now())
       .map(token => session.saveToken(token))
-      .emitTo(loginSuccessEventBus, loginErrorEventBus)
+      .emit(loginSuccessEventBus, loginErrorEventBus)
   }

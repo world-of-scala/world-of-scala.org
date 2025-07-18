@@ -16,7 +16,7 @@ object ProfilePage extends SecuredPageWithInit:
   val userBus = new EventBus[User]
 
   def init =
-    UserEndpoint.profile(()).emitTo(userBus)
+    UserEndpoint.profile(()).emit(userBus)
   def securedContent(userToken: UserToken) =
     div(
       h1("Profile Page"),

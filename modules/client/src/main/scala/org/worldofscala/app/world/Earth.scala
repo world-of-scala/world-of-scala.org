@@ -8,16 +8,18 @@ import com.raquo.laminar.api.L.*
 
 import dev.cheleb.ziotapir.laminar.*
 
+import dev.cheleb.zthreesjs.*
+
 import scala.scalajs.js.Math.PI
 
 import org.worldofscala.organisation.Organisation
 import org.worldofscala.organisation.OrganisationEndpoint
 import zio.*
 import org.worldofscala.organisation.LatLon
-import dev.cheleb.ziotapir.SameOriginBackendClientLive
+import dev.cheleb.ziotapir.BackendClientLive
 
 import org.worldofscala.app.world.SceneHelper.*
-
+import org.worldofscala.earth.Mesh.Id as MeshId
 object Earth {
 
   val R = 1
@@ -70,7 +72,7 @@ object Earth {
 
     globeGroup.add(points)
 
-    def addObj(obj: GLTFResult, location: LatLon) =
+    def addPinner(obj: GLTFResult, location: LatLon) =
       val pinner    = obj.scene.jsClone(true)
       val (x, y, z) = location.xyz(R + 0.02)
       pinner.position.set(x, y, z)
@@ -83,47 +85,42 @@ object Earth {
     loader.load(
       "/public/res/scala.glb",
       (obj) => {
-        addObj(obj, LatLon(46.5188, 6.5593)) // Lauzane
+        addPinner(obj, LatLon(46.5188, 6.5593)) // Lauzane
       }
     )
 
-    eartthDiv.amend(
-      onMountCallback { _ =>
-        OrganisationEndpoint
-          .allStream(())
-          .jsonlZIO[Organisation] {
-            case Right(organisation) =>
-              val meshIO: ZIO[Any, Any, GLTFResult] = organisation.meshId match {
-                case Some(meshId) =>
-                  ZIO.async { callback =>
-                    loader.load(
-                      SameOriginBackendClientLive.backendBaseURL.addPath("api", "mesh", meshId.toString()).toString,
-                      (obj) => {
-                        callback(ZIO.succeed(obj))
-                      }
-                    )
-                  }
-                case None =>
-                  ZIO.async { callback =>
-                    loader.load(
-                      s"/public/res/pinner.glb",
-                      (obj) => {
-                        callback(ZIO.succeed(obj))
-                      }
-                    )
-                  }
-              }
-              (for {
-                obj <- meshIO
-                _   <- ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}")
-                _   <- ZIO.attempt(addObj(obj, organisation.location))
-              } yield ()).ignore
+    OrganisationEndpoint
+      .allStream(())
+      .jsonlSuccessFoldZIO[Map[MeshId, GLTFResult], Organisation](Map.empty[MeshId, GLTFResult]):
+        (cache, organisation) =>
 
-            case Left(errorMessage) =>
-              Console.printLine(s"Failed: $errorMessage")
+          val (meshId, meshUrl) = organisation.meshId match {
+            case Some(id) =>
+              (id, BackendClientLive.url("api", "mesh", id.toString()))
+            case None =>
+              (org.worldofscala.earth.Mesh.default, BackendClientLive.url("public", "res", "pinner.glb"))
           }
-      }
-    )
+
+          val meshIO = cache.get(meshId) match {
+            case Some(obj) =>
+              ZIO.debug(s"Using cached mesh for ${organisation.name} with id ${meshId}") *>
+                ZIO.succeed(obj)
+
+            case None =>
+              ZIO.debug(s"Loading mesh for ${organisation.name} with id ${meshId}") *>
+                loader.zload(
+                  meshUrl
+                )
+
+          }
+          for {
+            obj <-
+              meshIO.mapError(error =>
+                new RuntimeException(s"Failed to load mesh for ${organisation.name}: ${error.message}")
+              )
+            _ <- ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}")
+            _ <- ZIO.succeed(addPinner(obj, organisation.location))
+          } yield cache + (organisation.meshId.getOrElse(org.worldofscala.earth.Mesh.default) -> obj)
 
     scene.add(
       globeGroup
