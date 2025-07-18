@@ -106,7 +106,7 @@ object CreateMesh:
                         _   = meshes.emit(ls)
                         _   = reset()
                       } yield id
-                      ios.runJs
+                      ios.run
                     }
                   case None =>
                 }
@@ -201,7 +201,7 @@ object CreateMesh:
   }
 
   def loadAllMeshes(): Unit =
-    MeshEndpoint.all(()).emitTo(meshes)
+    MeshEndpoint.all(()).emit(meshes)
 
   def allMeshes() =
 

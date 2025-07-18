@@ -16,7 +16,7 @@ import org.worldofscala.organisation.Organisation
 import org.worldofscala.organisation.OrganisationEndpoint
 import zio.*
 import org.worldofscala.organisation.LatLon
-import dev.cheleb.ziotapir.SameOriginBackendClientLive
+import dev.cheleb.ziotapir.BackendClientLive
 
 import org.worldofscala.app.world.SceneHelper.*
 import org.worldofscala.earth.Mesh.Id as MeshId
@@ -91,16 +91,14 @@ object Earth {
 
     OrganisationEndpoint
       .allStream(())
-      .jsonlFoldZIO[Map[MeshId, GLTFResult], Organisation](
-        Map.empty[org.worldofscala.earth.Mesh.Id, GLTFResult]
-      ) {
-        case (cache, Right(organisation)) =>
+      .jsonlSuccessFoldZIO[Map[MeshId, GLTFResult], Organisation](Map.empty[MeshId, GLTFResult]):
+        (cache, organisation) =>
 
           val (meshId, meshUrl) = organisation.meshId match {
             case Some(id) =>
-              (id, SameOriginBackendClientLive.url("api", "mesh", id.toString()))
+              (id, BackendClientLive.url("api", "mesh", id.toString()))
             case None =>
-              (org.worldofscala.earth.Mesh.default, SameOriginBackendClientLive.url("public", "res", "pinner.glb"))
+              (org.worldofscala.earth.Mesh.default, BackendClientLive.url("public", "res", "pinner.glb"))
           }
 
           val meshIO = cache.get(meshId) match {
@@ -123,11 +121,6 @@ object Earth {
             _ <- ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}")
             _ <- ZIO.succeed(addPinner(obj, organisation.location))
           } yield cache + (organisation.meshId.getOrElse(org.worldofscala.earth.Mesh.default) -> obj)
-
-        case (cache, Left(errorMessage)) =>
-          Console.printLine(s"Failed: $errorMessage") *>
-            ZIO.succeed(cache)
-      }
 
     scene.add(
       globeGroup

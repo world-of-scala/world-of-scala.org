@@ -53,7 +53,7 @@ object SignupPage:
 
             UserEndpoint
               .create(personVar.now())
-              .emitTo(userBus, errorBus)
+              .emit(userBus, errorBus)
 
             // scalafmt:on
 
