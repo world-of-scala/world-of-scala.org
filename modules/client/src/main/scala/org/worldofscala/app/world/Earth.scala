@@ -104,23 +104,27 @@ object Earth {
           val meshIO = cache.get(meshId) match {
             case Some(obj) =>
               ZIO.debug(s"Using cached mesh for ${organisation.name} with id ${meshId}") *>
-                ZIO.succeed(obj)
+                ZIO.succeed((false, obj))
 
             case None =>
               ZIO.debug(s"Loading mesh for ${organisation.name} with id ${meshId}") *>
-                loader.zload(
-                  meshUrl
-                )
+                loader
+                  .zload(
+                    meshUrl
+                  )
+                  .map(obj => (true, obj))
 
           }
           for {
-            obj <-
+            (addToCache, obj) <-
               meshIO.mapError(error =>
                 new RuntimeException(s"Failed to load mesh for ${organisation.name}: ${error.message}")
               )
-            _ <- ZIO.debug(s"Addings ${organisation.name} at ${organisation.location}")
+            _ <- ZIO.debug(s"Addings a ${organisation.name} at ${organisation.location}")
             _ <- ZIO.succeed(addPinner(obj, organisation.location))
-          } yield cache + (organisation.meshId.getOrElse(org.worldofscala.earth.Mesh.default) -> obj)
+          } yield
+            if addToCache then cache + (organisation.meshId.getOrElse(org.worldofscala.earth.Mesh.default) -> obj)
+            else cache
 
     scene.add(
       globeGroup
