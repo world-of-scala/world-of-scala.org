@@ -83,10 +83,8 @@ object Earth {
 
     OrganisationEndpoint
       .allStream(())
-      .jsonlFoldZIO[Map[MeshId, GLTFResult], Organisation](Map.empty[MeshId, GLTFResult]): (cache, organisation) =>
+      .jsonlFoldZIO[Map[MeshId, GLTFResult], Organisation](Map.empty[MeshId, GLTFResult]):
         addOrganisationPinner(
-          organisation,
-          cache,
           globeGroup,
           loader
         )
@@ -119,11 +117,9 @@ object Earth {
 
     eartthDiv
 
-  def addOrganisationPinner(
-    organisation: Organisation,
+  def addOrganisationPinner(globeGroup: Group, loader: GLTFLoader)(
     cache: Map[MeshId, GLTFResult],
-    globeGroup: Group,
-    loader: GLTFLoader
+    organisation: Organisation
   ): ZIO[Any, Throwable, Map[MeshId, GLTFResult]] =
     val (meshId, meshUrl) = organisation.meshId match {
       case Some(id) =>
