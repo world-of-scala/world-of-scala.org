@@ -20,7 +20,8 @@
       "url": "http://localhost:60678/sse",
       "type": "sse",
       "alwaysAllow": [
-        "compile-file"
+        "compile-file",
+        "compile-full"
       ]
     }
   }
