@@ -32,13 +32,12 @@ object Header:
           Icon(_.name := IconName.home, cls := "pad-10"),
           href := Router.uiRoute()
         ),
-        _.primaryTitle       := "World Of Scala",
-        _.secondaryTitle     := "Scala ❤️ around the world",
-        _.notificationsCount := "2+",
-        _.showNotifications  := true,
-        _.showCoPilot        := true,
-        _.slots.profile      := Avatar(idAttr := profileId, img(src := "img/questionmark.jpg")),
+        _.primaryTitle   := "World Of Scala",
+        _.secondaryTitle := "Scala ❤️ around the world",
+        _.slots.profile  := Avatar(idAttr := profileId, img(src := "img/scala.svg")),
         _.events.onProfileClick.mapTo(true) --> openPopoverBus
+      ).amend(
+        aria.label := "World of Scala header"
       ),
       Popover(
         _.openerId := profileId,
@@ -53,7 +52,7 @@ object Header:
 
   def notLogged =
     div(
-      styleAttr := "padding: 1em;",
+      cls := "pad-10",
       credentials.asForm,
       Toast(
         cls := "srf-invalid",

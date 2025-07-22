@@ -1,11 +1,13 @@
 #root {
-  font-family: Quicksand, Helvetica, Arial, sans-serif;
+  font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #333333;
 }
 
 body {
   margin: 0;
+  background-color: #ffffff;
 }
 
 /** Reducing the size of ui5 inputs of type number to only 100px */
@@ -35,10 +37,12 @@ ui5-input[type="Number"] {
 }
 
 .wrapper>div {
-  border: 2px solid rgb(233 171 88);
+  border: 2px solid #2A72C4;
+  /* blue */
   border-radius: 10px;
   padding: 1em;
-  color: #d9480f;
+  color: #de3423;
+  /* red */
 }
 
 
@@ -80,29 +84,36 @@ ui5-input[type="Number"] {
 }
 
 .srf-form {
-  border: 1px solid rgb(139, 139, 130);
+  border: 1px solid #cccccc;
   border-radius: 10px;
-  background-color: #f0f0f0;
+  background-color: #f8f8f8;
   margin: 1em;
   padding: 1em;
 }
 
 .srf-field {
-  background-color: #f0f0f079;
+  background-color: #f8f8f879;
 }
 
 .srf-panel {
-  border: 1px solid rgb(139, 139, 130);
+  border: 1px solid #cccccc;
   border-radius: 10px;
   margin: 1em;
 }
 
 .srf-form:has(.srf-invalid) {
-  border: 1px solid red;
+  border: 1px solid #de3423;
+  /* red */
 
 }
 
 
 .srf-invalid {
-  border: 1px solid red;
+  border: 1px solid #de3423;
+  /* red */
+}
+
+.srf-processing {
+  border: 1px solid #2A72C4;
+  /* blue */
 }
