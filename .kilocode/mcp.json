@@ -21,7 +21,16 @@
       "type": "sse",
       "alwaysAllow": [
         "compile-file",
-        "compile-full"
+        "compile-full",
+        "compile-module",
+        "test",
+        "glob-search",
+        "typed-glob-search",
+        "inspect",
+        "get-docs",
+        "get-usages",
+        "import-build",
+        "find-dep"
       ]
     }
   }
