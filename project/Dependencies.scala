@@ -17,7 +17,7 @@ object Dependencies {
     val quill                 = "4.8.6"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.17"
-    val tapir                 = "1.11.29"
+    val tapir                 = "1.11.40"
     val threesjs              = "0.0.2"
     val zio                   = "2.1.20"
     val zioConfig             = "4.0.3"
