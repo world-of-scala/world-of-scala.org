@@ -9,6 +9,7 @@ import com.raquo.laminar.api.L.*
 import dev.cheleb.ziotapir.laminar.*
 
 import dev.cheleb.zthreesjs.*
+import dev.cheleb.threesjs.*
 
 import scala.scalajs.js.Math.PI
 
@@ -26,6 +27,7 @@ object Earth {
 
   def apply() =
 
+    val margin    = 0.88
     val eartthDiv = div()
 
     val scene  = new Scene();
@@ -39,7 +41,7 @@ object Earth {
     )
 
     renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(window.innerWidth * .88, window.innerHeight * .88);
+    renderer.setSize(window.innerWidth * margin, window.innerHeight * margin);
 
     val orbitControl = OrbitControls(camera, renderer.domElement)
 
@@ -114,6 +116,8 @@ object Earth {
     scene.add(light)
 
     eartthDiv.ref.append(renderer.domElement)
+
+    window.addEventListener("resize", onWindowResize(camera, renderer, margin))
 
     eartthDiv
 
