@@ -1,4 +1,4 @@
-package org.worldofscala.organisation
+package org.worldofscala.backend.magnum
 
 import com.augustnagro.magnum.*
 import com.augustnagro.magnum.ziomagnum.*
@@ -7,11 +7,8 @@ import com.augustnagro.magnum.ziomagnum.*
 
 import io.scalaland.chimney.Transformer
 import org.worldofscala.*
-import org.worldofscala.earth.MeshView
-import org.worldofscala.earth.MeshEntity
-import org.worldofscala.repository.*
 import org.worldofscala.domain.user.User
-import org.worldofscala.domain.organisation.Organisation
+import org.worldofscala.domain.organisation.{Organisation, LatLon, Mesh}
 
 import zio.*
 import zio.stream.ZStream
@@ -33,8 +30,8 @@ import MeshEntity.given
 @SqlName("organisations")
 case class NewOrganisationEntity(
   name: String,
-  meshId: Option[MeshView.Id],
-  location: LatLonView,
+  meshId: Option[Mesh.Id],
+  location: LatLon,
   createdBy: User.Id,
   creationDate: java.time.OffsetDateTime
 ) derives DbCodec
@@ -44,14 +41,14 @@ case class NewOrganisationEntity(
 case class OrganisationEntity(
   @Id id: Organisation.Id,
   name: String,
-  meshId: Option[MeshView.Id],
-  location: LatLonView,
+  meshId: Option[Mesh.Id],
+  location: LatLon,
   createdBy: User.Id,
   creationDate: java.time.OffsetDateTime
 ) derives DbCodec
 
 object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply):
-  given Transformer[OrganisationEntity, OrganisationView] = Transformer.derive
+  given Transformer[OrganisationEntity, Organisation] = Transformer.derive
 
 class OrganisationRepositoryLive private (using DataSource, ZIOMagnumTracer, SqlLogger) extends OrganisationRepository {
 
